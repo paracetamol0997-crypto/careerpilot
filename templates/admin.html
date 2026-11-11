@@ -1,94 +1,93 @@
 {% extends "base.html" %}
-{% block title %}Admin & Telemetry — CareerPilot AI{% endblock %}
+{% block title %}Telemetry & Governance — CareerPilot{% endblock %}
 
 {% block content %}
 {% set events = state.analyticsEvents %}
-{% set widget_opens = [12, events | selectattr('eventName', 'equalto', 'chat_widget_opened') | list | length] | max %}
-{% set onboard_starts = [9, events | selectattr('eventName', 'equalto', 'onboarding_step_viewed') | list | length] | max %}
-{% set profiles_built = [8, events | selectattr('eventName', 'equalto', 'profile_created') | list | length] | max %}
-{% set value_moments = [7, events | selectattr('eventName', 'in', ['resume_score_viewed', 'roadmap_preview_viewed', 'job_preview_viewed']) | list | length] | max %}
-{% set registrations = [3, events | selectattr('eventName', 'equalto', 'registration_completed') | list | length] | max %}
+{% set widget_opens = events | selectattr('eventName', 'equalto', 'chat_widget_opened') | list | length %}
+{% set onboard_starts = events | selectattr('eventName', 'equalto', 'onboarding_step_viewed') | list | length %}
+{% set profiles_built = events | selectattr('eventName', 'equalto', 'profile_created') | list | length %}
+{% set value_moments = events | selectattr('eventName', 'in', ['resume_score_viewed', 'roadmap_preview_viewed', 'job_preview_viewed']) | list | length %}
+{% set registrations = events | selectattr('eventName', 'equalto', 'registration_completed') | list | length %}
 
 <div class="container" style="padding-top:2rem; padding-bottom:4rem; display:flex; flex-direction:column; gap:1.75rem;">
   <div class="cp-card">
-    <div class="cp-section-label"><span class="cp-coral-dot"></span><span>Admin &amp; Growth Control</span></div>
-    <h1 class="font-poster text-brand" style="font-size:clamp(2rem, 4vw, 2.75rem); text-transform:uppercase; margin:0.4rem 0;">
-      Platform Telemetry &amp; Governance
+    <h1 style="font-size:clamp(1.65rem, 3.2vw, 2.25rem); margin-bottom:0.45rem;">
+      Platform telemetry and governance
     </h1>
-    <p class="text-muted" style="margin:0; font-size:0.85rem;">
-      Funnel conversion · Persistent SQLite feature flags · Grounded knowledge verification · DPDP compliance audit
+    <p class="text-muted" style="margin:0; font-size:0.9rem;">
+      Live session funnel counts, persistent feature flags, curated resources, and audit logs.
     </p>
   </div>
 
   <div class="cp-tabs" id="admin-tabs">
-    <button type="button" class="cp-tab-btn active" data-admin-tab="funnel">Conversion Funnel</button>
-    <button type="button" class="cp-tab-btn" data-admin-tab="flags">Feature Flags</button>
-    <button type="button" class="cp-tab-btn" data-admin-tab="resources">Knowledge Resources ({{ curated_resources | length }})</button>
-    <button type="button" class="cp-tab-btn" data-admin-tab="audit">PII Audit Logs</button>
+    <button type="button" class="cp-tab-btn active" data-admin-tab="funnel">Conversion funnel</button>
+    <button type="button" class="cp-tab-btn" data-admin-tab="flags">Feature flags</button>
+    <button type="button" class="cp-tab-btn" data-admin-tab="resources">Knowledge resources (<span class="tabular-nums">{{ curated_resources | length }}</span>)</button>
+    <button type="button" class="cp-tab-btn" data-admin-tab="audit">Audit logs</button>
   </div>
 
   <section id="admin-pane-funnel" style="display:flex; flex-direction:column; gap:1.25rem;">
     <div class="cp-grid-5">
       <div class="cp-card" style="text-align:center;">
-        <div class="font-mono text-subtle" style="font-size:0.68rem;">1. Widget Open</div>
-        <div class="font-mono tabular-nums" style="font-size:1.65rem; font-weight:700;">{{ widget_opens }}</div>
-        <div class="font-mono text-pass" style="font-size:0.72rem;">100% conv.</div>
+        <div class="text-subtle" style="font-size:0.8rem;">Widget opens</div>
+        <div class="tabular-nums" style="font-size:1.75rem; font-weight:700; margin:0.25rem 0;">{{ widget_opens }}</div>
+        <div class="text-muted tabular-nums" style="font-size:0.78rem;">{{ "100%" if widget_opens > 0 else "0%" }}</div>
       </div>
       <div class="cp-card" style="text-align:center;">
-        <div class="font-mono text-subtle" style="font-size:0.68rem;">2. Onboard Start</div>
-        <div class="font-mono tabular-nums" style="font-size:1.65rem; font-weight:700;">{{ onboard_starts }}</div>
-        <div class="font-mono text-pass" style="font-size:0.72rem;">{{ ((onboard_starts / widget_opens) * 100) | round | int }}% conv.</div>
+        <div class="text-subtle" style="font-size:0.8rem;">Onboard starts</div>
+        <div class="tabular-nums" style="font-size:1.75rem; font-weight:700; margin:0.25rem 0;">{{ onboard_starts }}</div>
+        <div class="text-pass tabular-nums" style="font-size:0.78rem;">{{ (((onboard_starts / widget_opens) * 100) | round | int) if widget_opens > 0 else 0 }}%</div>
       </div>
       <div class="cp-card" style="text-align:center;">
-        <div class="font-mono text-subtle" style="font-size:0.68rem;">3. Profile Built</div>
-        <div class="font-mono tabular-nums" style="font-size:1.65rem; font-weight:700;">{{ profiles_built }}</div>
-        <div class="font-mono text-pass" style="font-size:0.72rem;">{{ ((profiles_built / widget_opens) * 100) | round | int }}% conv.</div>
+        <div class="text-subtle" style="font-size:0.8rem;">Profiles built</div>
+        <div class="tabular-nums" style="font-size:1.75rem; font-weight:700; margin:0.25rem 0;">{{ profiles_built }}</div>
+        <div class="text-pass tabular-nums" style="font-size:0.78rem;">{{ (((profiles_built / widget_opens) * 100) | round | int) if widget_opens > 0 else 0 }}%</div>
       </div>
       <div class="cp-card" style="text-align:center;">
-        <div class="font-mono text-subtle" style="font-size:0.68rem;">4. Value Moment</div>
-        <div class="font-mono tabular-nums" style="font-size:1.65rem; font-weight:700;">{{ value_moments }}</div>
-        <div class="font-mono text-pass" style="font-size:0.72rem;">{{ ((value_moments / widget_opens) * 100) | round | int }}% conv.</div>
+        <div class="text-subtle" style="font-size:0.8rem;">Value moments</div>
+        <div class="tabular-nums" style="font-size:1.75rem; font-weight:700; margin:0.25rem 0;">{{ value_moments }}</div>
+        <div class="text-pass tabular-nums" style="font-size:0.78rem;">{{ (((value_moments / widget_opens) * 100) | round | int) if widget_opens > 0 else 0 }}%</div>
       </div>
       <div class="cp-card" style="text-align:center;">
-        <div class="font-mono text-subtle" style="font-size:0.68rem;">5. Registered</div>
-        <div class="font-mono tabular-nums" style="font-size:1.65rem; font-weight:700;">{{ registrations }}</div>
-        <div class="font-mono text-pass" style="font-size:0.72rem;">{{ ((registrations / widget_opens) * 100) | round | int }}% conv.</div>
+        <div class="text-subtle" style="font-size:0.8rem;">Registrations</div>
+        <div class="tabular-nums" style="font-size:1.75rem; font-weight:700; margin:0.25rem 0;">{{ registrations }}</div>
+        <div class="text-pass tabular-nums" style="font-size:0.78rem;">{{ (((registrations / widget_opens) * 100) | round | int) if widget_opens > 0 else 0 }}%</div>
       </div>
     </div>
 
-    <div class="cp-card" style="display:flex; flex-direction:column; gap:0.65rem; font-size:0.82rem;">
-      <h3 style="margin:0 0 0.25rem; font-size:0.95rem;">PRD Target Health Checks</h3>
-      <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:0.45rem;">
-        <span class="text-muted">Target Time to Registration</span>
-        <span class="font-mono text-pass">Under 120s median</span>
+    <div class="cp-card" style="display:flex; flex-direction:column; gap:0.85rem; font-size:0.88rem;">
+      <h2 style="font-size:1.05rem;">Governance checks</h2>
+      <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+        <span class="text-muted">Target time to registration</span>
+        <span class="text-pass tabular-nums" style="font-weight:600;">Under 120s median</span>
       </div>
-      <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:0.45rem;">
-        <span class="text-muted">Grounding URL Safety</span>
-        <span class="font-mono text-pass">100% Vetted Collection IDs</span>
+      <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+        <span class="text-muted">Grounding URL verification</span>
+        <span class="text-pass" style="font-weight:600;">Curated IDs only</span>
       </div>
-      <div style="display:flex; justify-content:space-between;">
-        <span class="text-muted">Fairness &amp; Bias Check</span>
-        <span class="font-mono text-pass">CGPA / College Tier Excluded</span>
+      <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+        <span class="text-muted">Fairness and bias screening</span>
+        <span class="text-pass" style="font-weight:600;">CGPA and college tier excluded</span>
       </div>
     </div>
   </section>
 
   <section id="admin-pane-flags" class="hidden" style="max-width:42rem;">
-    <div class="cp-card" style="display:flex; flex-direction:column; gap:1.1rem;">
+    <div class="cp-card" style="display:flex; flex-direction:column; gap:1.35rem;">
       <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem;">
         <div>
-          <strong style="display:block; font-size:0.9rem;">Lock ATS Mistakes #2 &amp; #3 (Guest Gating)</strong>
-          <span class="text-muted" style="font-size:0.78rem;">When enabled, guest visitors only see Mistake #1 until free registration.</span>
+          <strong style="display:block; font-size:0.94rem;">Lock ATS mistakes #2 and #3 for guests</strong>
+          <span class="text-muted" style="font-size:0.84rem;">Requires free sign-up to view secondary resume rewrites.</span>
         </div>
         <button type="button" class="cp-btn cp-btn-sm admin-flag-toggle {{ 'cp-btn-primary' if state.featureFlags.lockAtsMistakes2and3 else 'cp-btn-outline' }}" data-flag="lockAtsMistakes2and3" data-val="{{ 'true' if state.featureFlags.lockAtsMistakes2and3 else 'false' }}">
-          {{ "🔒 Enabled" if state.featureFlags.lockAtsMistakes2and3 else "🔓 Disabled" }}
+          {{ "Enabled" if state.featureFlags.lockAtsMistakes2and3 else "Disabled" }}
         </button>
       </div>
 
-      <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; border-top:1px solid var(--border-subtle); padding-top:1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem;">
         <div>
-          <strong style="display:block; font-size:0.9rem;">Voice Interview Interface (Web Speech STT)</strong>
-          <span class="text-muted" style="font-size:0.78rem;">Enable voice transcription input buttons in 5-min mock interview.</span>
+          <strong style="display:block; font-size:0.94rem;">Voice input in mock interviews</strong>
+          <span class="text-muted" style="font-size:0.84rem;">Enables speech-to-text controls inside the 5-minute interview drill.</span>
         </div>
         <button type="button" class="cp-btn cp-btn-sm admin-flag-toggle {{ 'cp-btn-primary' if state.featureFlags.enableVoiceInterviewMock else 'cp-btn-outline' }}" data-flag="enableVoiceInterviewMock" data-val="{{ 'true' if state.featureFlags.enableVoiceInterviewMock else 'false' }}">
           {{ "Enabled" if state.featureFlags.enableVoiceInterviewMock else "Disabled" }}
@@ -100,15 +99,15 @@
   <section id="admin-pane-resources" class="hidden">
     <div class="cp-grid-2">
       {% for r in curated_resources %}
-        <div class="cp-card" style="padding:1rem; display:flex; flex-direction:column; gap:0.35rem;">
-          <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:0.68rem;">
-            <span class="text-subtle">{{ r.id }}</span>
-            <span class="cp-badge">{{ r.platform }}</span>
+        <div class="cp-card" style="padding:1.15rem; display:flex; flex-direction:column; gap:0.4rem;">
+          <div style="display:flex; justify-content:space-between; font-size:0.78rem;" class="text-subtle">
+            <span class="font-mono">{{ r.id }}</span>
+            <span>{{ r.platform }}</span>
           </div>
-          <strong style="font-size:0.85rem;">{{ r.title }}</strong>
-          <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:0.7rem;" class="text-muted">
-            <span>Lang: {{ r.language }} · {{ r.difficulty }}</span>
-            <span class="text-pass">Verified: {{ r.verifiedAt }}</span>
+          <strong style="font-size:0.92rem;">{{ r.title }}</strong>
+          <div style="display:flex; justify-content:space-between; font-size:0.8rem;" class="text-muted">
+            <span>{{ r.language }} · {{ r.difficulty }}</span>
+            <span class="text-pass tabular-nums">Verified {{ r.verifiedAt }}</span>
           </div>
         </div>
       {% endfor %}
@@ -116,15 +115,15 @@
   </section>
 
   <section id="admin-pane-audit" class="hidden">
-    <div class="cp-card" style="background:#0b1613; color:#f4efea; font-family:var(--font-mono); font-size:0.75rem; max-height:26rem; overflow-y:auto;">
+    <div class="cp-card" style="background:#111312; color:#f1f4f2; font-family:var(--font-mono); font-size:0.78rem; max-height:26rem; overflow-y:auto;">
       {% if not events %}
-        <div style="color:#7f978f;">// No telemetry events recorded yet. Interact with chat, resume audit, or jobs to stream events.</div>
+        <div style="color:#98a49e;">No telemetry events recorded in this session yet.</div>
       {% else %}
         {% for ev in events %}
-          <div style="border-bottom:1px solid rgba(255,255,255,0.1); padding:0.4rem 0;">
-            <span style="color:#5cc4a6;">[{{ ev.timestamp[11:19] }}]</span>
-            <span style="color:#fbbf24;">{{ ev.eventName }}</span>
-            <span style="color:#7f978f;">session={{ ev.sessionId }}</span>
+          <div style="padding:0.45rem 0;">
+            <span style="color:#57d6a8;" class="tabular-nums">[{{ ev.timestamp[11:19] }}]</span>
+            <span style="color:#f4be5c;">{{ ev.eventName }}</span>
+            <span style="color:#98a49e;">session={{ ev.sessionId }}</span>
           </div>
         {% endfor %}
       {% endif %}

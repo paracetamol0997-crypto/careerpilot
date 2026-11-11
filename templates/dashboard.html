@@ -1,79 +1,77 @@
 {% extends "base.html" %}
-{% block title %}My Space — CareerPilot Student Dashboard{% endblock %}
+{% block title %}My Space — CareerPilot{% endblock %}
 
 {% block content %}
 <div class="container" style="padding-top:2rem; padding-bottom:4rem; display:flex; flex-direction:column; gap:1.75rem;">
   <div class="cp-card" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1.5rem;">
-    <div style="display:flex; flex-direction:column; gap:0.65rem;">
-      <div class="cp-section-label"><span class="cp-coral-dot"></span><span>My Space · Career Command</span></div>
-      <h1 class="font-poster" style="font-size:clamp(2rem, 4.5vw, 3rem); text-transform:uppercase; margin:0; line-height:1;">
-        {% if state.profile %}{{ state.profile.branch }} Student {% else %}Your {% endif %}
-        <span class="text-brand">Career Dossier</span>
+    <div style="display:flex; flex-direction:column; gap:0.45rem;">
+      <h1 style="font-size:clamp(1.65rem, 3.2vw, 2.25rem);">
+        {% if state.profile %}{{ state.profile.branch }} Career Plan{% else %}Your Career Plan{% endif %}
       </h1>
-      <div style="display:flex; flex-wrap:wrap; gap:0.5rem; font-family:var(--font-mono); font-size:0.75rem;">
-        <span class="cp-badge">Target: <strong>{{ state.profile.targetRole if state.profile else "Software Developer" }}</strong></span>
-        <span class="cp-badge">Year: <strong>{{ state.profile.year if state.profile else "3rd" }}</strong></span>
-        <span class="cp-badge {% if state.isRegistered %}cp-badge-pass{% endif %}">
-          Mode: <strong>{{ "Verified (SQLite)" if state.isRegistered else "Guest (SQLite Session)" }}</strong>
-        </span>
-      </div>
+      <p class="text-muted" style="margin:0; font-size:0.9rem;">
+        {{ state.profile.targetRole if state.profile else "Software Developer" }} ·
+        {{ state.profile.year if state.profile else "3rd" }} year ·
+        {{ "Saved account" if state.isRegistered else "Guest session" }}
+      </p>
     </div>
-    <a href="{{ url_for('pages.chat_page') }}" class="cp-btn cp-btn-cta">Open Co-Pilot Chat →</a>
+    <a href="{{ url_for('pages.chat_page') }}" class="cp-btn cp-btn-primary">Open advisor chat</a>
   </div>
 
   <div class="cp-tabs" id="dashboard-tabs">
     <button type="button" class="cp-tab-btn active" data-dash-tab="overview">Overview</button>
-    <button type="button" class="cp-tab-btn" data-dash-tab="resume">Resume Trend ({{ state.resumeHistory | length }})</button>
-    <button type="button" class="cp-tab-btn" data-dash-tab="roadmap">90-Day Roadmap ({{ 12 if state.roadmap else 0 }})</button>
-    <button type="button" class="cp-tab-btn" data-dash-tab="jobs">Saved Jobs ({{ state.savedJobs | length }})</button>
-    <button type="button" class="cp-tab-btn" data-dash-tab="interviews">Mock Interviews ({{ state.interviewHistory | length }})</button>
-    <button type="button" class="cp-tab-btn" data-dash-tab="privacy">Privacy &amp; DPDP</button>
+    <button type="button" class="cp-tab-btn" data-dash-tab="resume">Resumes (<span class="tabular-nums">{{ state.resumeHistory | length }}</span>)</button>
+    <button type="button" class="cp-tab-btn" data-dash-tab="roadmap">Roadmap (<span class="tabular-nums">{{ 12 if state.roadmap else 0 }}</span>)</button>
+    <button type="button" class="cp-tab-btn" data-dash-tab="jobs">Saved jobs (<span class="tabular-nums">{{ state.savedJobs | length }}</span>)</button>
+    <button type="button" class="cp-tab-btn" data-dash-tab="interviews">Interviews (<span class="tabular-nums">{{ state.interviewHistory | length }}</span>)</button>
+    <button type="button" class="cp-tab-btn" data-dash-tab="privacy">Privacy</button>
   </div>
 
   <!-- Tab: Overview -->
   <section id="dash-pane-overview" style="display:flex; flex-direction:column; gap:1.5rem;">
     <div class="cp-grid-3">
       <div class="cp-card" style="display:flex; flex-direction:column; justify-content:space-between; gap:1rem;">
-        <div class="font-mono text-subtle" style="font-size:0.7rem; text-transform:uppercase;">Latest ATS Score</div>
+        <div class="text-subtle" style="font-size:0.84rem; font-weight:500;">Latest ATS score</div>
         <div>
-          <div class="font-mono tabular-nums" style="font-size:2.2rem; font-weight:700;">
+          <div class="tabular-nums" style="font-size:2.1rem; font-weight:700;">
             {{ state.resumeHistory[0].score if state.resumeHistory else "—" }}
-            <span class="text-subtle" style="font-size:0.85rem; font-weight:400;">/ 100</span>
+            <span class="text-subtle" style="font-size:0.9rem; font-weight:400;">/ 100</span>
           </div>
-          <p class="text-muted" style="font-size:0.78rem; margin:0.35rem 0 0;">
+          <p class="text-muted" style="font-size:0.84rem; margin:0.35rem 0 0;">
             {% if state.resumeHistory %}{{ state.resumeHistory | length }} audit(s) saved.{% else %}No resume audited yet.{% endif %}
           </p>
         </div>
         <a href="{{ url_for('pages.chat_page', intent='resume_check') }}" class="cp-btn cp-btn-outline cp-btn-sm">
-          {{ "Re-Audit Resume" if state.resumeHistory else "Audit Resume Free" }} →
+          {{ "Re-audit resume" if state.resumeHistory else "Score resume" }}
         </a>
       </div>
 
       <div class="cp-card" style="display:flex; flex-direction:column; justify-content:space-between; gap:1rem;">
-        <div class="font-mono text-subtle" style="font-size:0.7rem; text-transform:uppercase;">Roadmap Sequence</div>
+        <div class="text-subtle" style="font-size:0.84rem; font-weight:500;">Roadmap progress</div>
         <div>
-          <div class="font-mono" style="font-size:2.2rem; font-weight:700;">{{ "12 Wks" if state.roadmap else "Pending" }}</div>
-          <p class="text-muted" style="font-size:0.78rem; margin:0.35rem 0 0;">
-            {{ (state.roadmap.progressPercent ~ "% completed across vetted guides.") if state.roadmap else "Generate your 12-week milestone track." }}
+          <div class="tabular-nums" style="font-size:2.1rem; font-weight:700;">
+            {{ (state.roadmap.progressPercent ~ "%") if state.roadmap else "—" }}
+          </div>
+          <p class="text-muted" style="font-size:0.84rem; margin:0.35rem 0 0;">
+            {% if state.roadmap %}12-week plan active.{% else %}Generate your 12-week skill sequence.{% endif %}
           </p>
         </div>
         <a href="{{ url_for('pages.chat_page', intent='roadmap') }}" class="cp-btn cp-btn-outline cp-btn-sm">
-          {{ "Explore Weeks 1–12" if state.roadmap else "Build Custom Roadmap" }} →
+          {{ "Open roadmap" if state.roadmap else "Build roadmap" }}
         </a>
       </div>
 
       <div class="cp-card" style="display:flex; flex-direction:column; justify-content:space-between; gap:1rem;">
-        <div class="font-mono text-subtle" style="font-size:0.7rem; text-transform:uppercase;">Interview Rating</div>
+        <div class="text-subtle" style="font-size:0.84rem; font-weight:500;">Mock interview</div>
         <div>
-          <div class="font-mono tabular-nums" style="font-size:2.2rem; font-weight:700;">
+          <div class="tabular-nums" style="font-size:2.1rem; font-weight:700;">
             {{ state.interviewHistory[0].overallScore if state.interviewHistory else "—" }}
-            <span class="text-subtle" style="font-size:0.85rem; font-weight:400;">/ 10</span>
+            <span class="text-subtle" style="font-size:0.9rem; font-weight:400;">/ 10</span>
           </div>
-          <p class="text-muted" style="font-size:0.78rem; margin:0.35rem 0 0;">
-            {% if state.interviewHistory %}{{ state.interviewHistory | length }} 5-minute drill(s) completed.{% else %}Practice fresher technical rounds.{% endif %}
+          <p class="text-muted" style="font-size:0.84rem; margin:0.35rem 0 0;">
+            {% if state.interviewHistory %}{{ state.interviewHistory | length }} session(s) completed.{% else %}Practice timed technical rounds.{% endif %}
           </p>
         </div>
-        <a href="{{ url_for('pages.chat_page', intent='mock_interview') }}" class="cp-btn cp-btn-outline cp-btn-sm">Start 5-Min Practice →</a>
+        <a href="{{ url_for('pages.chat_page', intent='mock_interview') }}" class="cp-btn cp-btn-outline cp-btn-sm">Start 5-min practice</a>
       </div>
     </div>
   </section>
@@ -81,27 +79,24 @@
   <!-- Tab: Resume History -->
   <section id="dash-pane-resume" class="hidden" style="display:flex; flex-direction:column; gap:1rem;">
     <div style="display:flex; justify-content:space-between; align-items:center;">
-      <h2 class="font-display" style="margin:0; font-size:1.5rem;">Resume Audit History</h2>
-      <a href="{{ url_for('pages.chat_page', intent='resume_check') }}" class="cp-btn cp-btn-primary cp-btn-sm">New Resume Audit</a>
+      <h2 style="font-size:1.35rem;">Resume audit history</h2>
+      <a href="{{ url_for('pages.chat_page', intent='resume_check') }}" class="cp-btn cp-btn-primary cp-btn-sm">New audit</a>
     </div>
     {% if not state.resumeHistory %}
       <div class="cp-card" style="text-align:center; padding:2.5rem;">
-        <p class="text-muted">No resumes audited yet. Run a deterministic 100-point ATS check in Co-Pilot chat.</p>
-        <a href="{{ url_for('pages.chat_page', intent='resume_check') }}" class="cp-btn cp-btn-primary cp-btn-sm">Run Free Audit</a>
+        <p class="text-muted" style="margin:0 0 1rem;">No resumes audited yet. Score your resume against our 100-point rubric.</p>
+        <a href="{{ url_for('pages.chat_page', intent='resume_check') }}" class="cp-btn cp-btn-primary cp-btn-sm">Score resume</a>
       </div>
     {% else %}
       {% for res in state.resumeHistory %}
         <div class="cp-card" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem;">
-          <div style="max-width:40rem;">
-            <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.35rem;">
-              <span class="cp-badge">Audit #{{ loop.revindex }}</span>
-              <strong>{{ res.targetRole }}</strong>
-            </div>
-            <p class="text-muted" style="margin:0; font-size:0.82rem;">{{ res.verdict }}</p>
+          <div style="max-width:42rem;">
+            <strong style="font-size:1rem;">{{ res.targetRole }}</strong>
+            <p class="text-muted" style="margin:0.35rem 0 0; font-size:0.86rem;">{{ res.verdict }}</p>
           </div>
           <div style="text-align:right;">
-            <div class="font-mono text-brand tabular-nums" style="font-size:1.75rem; font-weight:700;">{{ res.score }}</div>
-            <div class="font-mono text-subtle" style="font-size:0.7rem;">/ 100 ATS</div>
+            <div class="text-brand tabular-nums" style="font-size:1.75rem; font-weight:700;">{{ res.score }}</div>
+            <div class="text-subtle" style="font-size:0.76rem;">out of 100</div>
           </div>
         </div>
       {% endfor %}
@@ -111,38 +106,38 @@
   <!-- Tab: 90-Day Roadmap -->
   <section id="dash-pane-roadmap" class="hidden" style="display:flex; flex-direction:column; gap:1rem;">
     <div style="display:flex; justify-content:space-between; align-items:center;">
-      <h2 class="font-display" style="margin:0; font-size:1.5rem;">90-Day Roadmap Track</h2>
-      <a href="{{ url_for('pages.chat_page', intent='roadmap') }}" class="cp-btn cp-btn-primary cp-btn-sm">Open in Chat</a>
+      <h2 style="font-size:1.35rem;">90-day roadmap</h2>
+      <a href="{{ url_for('pages.chat_page', intent='roadmap') }}" class="cp-btn cp-btn-primary cp-btn-sm">Open in advisor</a>
     </div>
     {% if not state.roadmap %}
       <div class="cp-card" style="text-align:center; padding:2.5rem;">
-        <p class="text-muted">No roadmap generated yet. Generate your 12-week sequence with vetted free resources.</p>
-        <a href="{{ url_for('pages.chat_page', intent='roadmap') }}" class="cp-btn cp-btn-primary cp-btn-sm">Generate 90-Day Roadmap</a>
+        <p class="text-muted" style="margin:0 0 1rem;">No roadmap generated yet. Build a 12-week skill sequence with free resources.</p>
+        <a href="{{ url_for('pages.chat_page', intent='roadmap') }}" class="cp-btn cp-btn-primary cp-btn-sm">Build roadmap</a>
       </div>
     {% else %}
       {% for wk in state.roadmap.weeks %}
         <div class="cp-card" style="display:flex; flex-direction:column; gap:0.75rem;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem;">
             <div>
-              <span class="cp-badge">Week {{ wk.weekNumber }} · {{ wk.phase }}</span>
-              <h3 style="margin:0.4rem 0 0; font-size:1rem;">{{ wk.title }}</h3>
+              <div class="text-subtle tabular-nums" style="font-size:0.8rem;">Week {{ wk.weekNumber }} · {{ wk.phase }}</div>
+              <h3 style="margin:0.25rem 0 0; font-size:1.02rem;">{{ wk.title }}</h3>
             </div>
-            <span class="cp-badge {{ 'cp-badge-warn' if wk.isLocked else 'cp-badge-pass' }}">
-              {{ "Locked (Guest)" if wk.isLocked else "Unlocked" }}
+            <span class="cp-status-note {{ 'cp-status-warn' if wk.isLocked else 'cp-status-pass' }}">
+              {{ "Locked" if wk.isLocked else "Unlocked" }}
             </span>
           </div>
-          <p class="text-muted" style="margin:0; font-size:0.82rem;">{{ wk.description }}</p>
+          <p class="text-muted" style="margin:0; font-size:0.86rem;">{{ wk.description }}</p>
           {% if not wk.isLocked %}
-            <div style="display:flex; flex-direction:column; gap:0.4rem;">
+            <div style="display:flex; flex-direction:column; gap:0.45rem;">
               {% for task in wk.tasks %}
-                <label style="display:flex; align-items:center; gap:0.6rem; font-size:0.82rem; cursor:pointer;">
+                <label style="display:flex; align-items:center; gap:0.65rem; font-size:0.86rem; cursor:pointer;">
                   <input type="checkbox" class="dash-task-checkbox" data-week="{{ wk.weekNumber }}" data-task="{{ task.id }}" {% if task.completed %}checked{% endif %} />
                   <span style="{% if task.completed %}text-decoration:line-through; opacity:0.6;{% endif %}">{{ task.title }}</span>
                 </label>
               {% endfor %}
             </div>
-            <a href="{{ wk.resourceUrl }}" target="_blank" rel="noopener noreferrer" class="font-mono text-brand" style="font-size:0.75rem;">
-              ↗ {{ wk.resourceTitle }}
+            <a href="{{ wk.resourceUrl }}" target="_blank" rel="noopener noreferrer" class="text-brand" style="font-size:0.84rem; font-weight:500;">
+              {{ wk.resourceTitle }}
             </a>
           {% endif %}
         </div>
@@ -153,23 +148,23 @@
   <!-- Tab: Saved Jobs -->
   <section id="dash-pane-jobs" class="hidden" style="display:flex; flex-direction:column; gap:1rem;">
     <div style="display:flex; justify-content:space-between; align-items:center;">
-      <h2 class="font-display" style="margin:0; font-size:1.5rem;">Verified Saved Jobs</h2>
-      <a href="{{ url_for('pages.chat_page', intent='jobs') }}" class="cp-btn cp-btn-primary cp-btn-sm">Search Matches</a>
+      <h2 style="font-size:1.35rem;">Saved roles</h2>
+      <a href="{{ url_for('pages.chat_page', intent='jobs') }}" class="cp-btn cp-btn-primary cp-btn-sm">Browse matches</a>
     </div>
     {% if not state.savedJobs %}
       <div class="cp-card" style="text-align:center; padding:2.5rem;">
-        <p class="text-muted">No saved jobs yet. Bookmark fresher matches in Co-Pilot chat.</p>
-        <a href="{{ url_for('pages.chat_page', intent='jobs') }}" class="cp-btn cp-btn-primary cp-btn-sm">Browse Jobs</a>
+        <p class="text-muted" style="margin:0 0 1rem;">No saved jobs yet. Bookmark fresher openings inside the advisor.</p>
+        <a href="{{ url_for('pages.chat_page', intent='jobs') }}" class="cp-btn cp-btn-primary cp-btn-sm">Browse roles</a>
       </div>
     {% else %}
       {% for job in state.savedJobs %}
         <div class="cp-card" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem;">
           <div>
-            <span class="cp-badge cp-badge-pass">Verified Recruiter · {{ job.location }}</span>
-            <h3 style="margin:0.4rem 0 0.2rem; font-size:1rem;">{{ job.title }}</h3>
-            <p class="text-muted" style="margin:0; font-size:0.8rem;">{{ job.company }} · {{ job.salaryRange }}</p>
+            <div class="text-pass" style="font-size:0.78rem; font-weight:600;">Verified · {{ job.location }}</div>
+            <h3 style="margin:0.25rem 0 0.2rem; font-size:1.02rem;">{{ job.title }}</h3>
+            <p class="text-muted" style="margin:0; font-size:0.84rem;">{{ job.company }} · {{ job.salaryRange }}</p>
           </div>
-          <a href="{{ job.applyUrl }}" target="_blank" rel="noopener noreferrer" class="cp-btn cp-btn-primary cp-btn-sm">Apply Directly ↗</a>
+          <a href="{{ job.applyUrl }}" target="_blank" rel="noopener noreferrer" class="cp-btn cp-btn-primary cp-btn-sm">Apply directly</a>
         </div>
       {% endfor %}
     {% endif %}
@@ -178,26 +173,26 @@
   <!-- Tab: Interviews -->
   <section id="dash-pane-interviews" class="hidden" style="display:flex; flex-direction:column; gap:1rem;">
     <div style="display:flex; justify-content:space-between; align-items:center;">
-      <h2 class="font-display" style="margin:0; font-size:1.5rem;">Mock Interview History</h2>
-      <a href="{{ url_for('pages.chat_page', intent='mock_interview') }}" class="cp-btn cp-btn-primary cp-btn-sm">Start 5-Min Mock Interview</a>
+      <h2 style="font-size:1.35rem;">Mock interview history</h2>
+      <a href="{{ url_for('pages.chat_page', intent='mock_interview') }}" class="cp-btn cp-btn-primary cp-btn-sm">Start 5-min practice</a>
     </div>
     {% if not state.interviewHistory %}
       <div class="cp-card" style="text-align:center; padding:2.5rem;">
-        <p class="text-muted">No mock interviews recorded yet.</p>
-        <a href="{{ url_for('pages.chat_page', intent='mock_interview') }}" class="cp-btn cp-btn-primary cp-btn-sm">Start Practice Session</a>
+        <p class="text-muted" style="margin:0 0 1rem;">No mock interviews recorded yet.</p>
+        <a href="{{ url_for('pages.chat_page', intent='mock_interview') }}" class="cp-btn cp-btn-primary cp-btn-sm">Start practice session</a>
       </div>
     {% else %}
       {% for rep in state.interviewHistory %}
-        <div class="cp-card" style="display:flex; flex-direction:column; gap:0.85rem;">
+        <div class="cp-card" style="display:flex; flex-direction:column; gap:0.9rem;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong>Session #{{ loop.revindex }} — 5-Min Mock Interview</strong>
-            <span class="font-mono text-brand tabular-nums" style="font-size:1.4rem; font-weight:700;">{{ rep.overallScore }} / 10</span>
+            <strong class="tabular-nums">Mock interview {{ loop.revindex }}</strong>
+            <span class="text-brand tabular-nums" style="font-size:1.4rem; font-weight:700;">{{ rep.overallScore }} / 10</span>
           </div>
           <div class="cp-grid-4">
-            <div class="cp-card" style="padding:0.65rem; text-align:center;"><div class="font-mono text-subtle" style="font-size:0.65rem;">Accuracy</div><strong>{{ rep.contentAccuracyScore }}/10</strong></div>
-            <div class="cp-card" style="padding:0.65rem; text-align:center;"><div class="font-mono text-subtle" style="font-size:0.65rem;">Clarity</div><strong>{{ rep.clarityScore }}/10</strong></div>
-            <div class="cp-card" style="padding:0.65rem; text-align:center;"><div class="font-mono text-subtle" style="font-size:0.65rem;">Confidence</div><strong>{{ rep.confidenceScore }}/10</strong></div>
-            <div class="cp-card" style="padding:0.65rem; text-align:center;"><div class="font-mono text-subtle" style="font-size:0.65rem;">Comm.</div><strong>{{ rep.communicationScore }}/10</strong></div>
+            <div class="cp-subcard" style="text-align:center;"><div class="text-subtle" style="font-size:0.75rem;">Accuracy</div><strong class="tabular-nums">{{ rep.contentAccuracyScore }}/10</strong></div>
+            <div class="cp-subcard" style="text-align:center;"><div class="text-subtle" style="font-size:0.75rem;">Clarity</div><strong class="tabular-nums">{{ rep.clarityScore }}/10</strong></div>
+            <div class="cp-subcard" style="text-align:center;"><div class="text-subtle" style="font-size:0.75rem;">Confidence</div><strong class="tabular-nums">{{ rep.confidenceScore }}/10</strong></div>
+            <div class="cp-subcard" style="text-align:center;"><div class="text-subtle" style="font-size:0.75rem;">Communication</div><strong class="tabular-nums">{{ rep.communicationScore }}/10</strong></div>
           </div>
         </div>
       {% endfor %}
@@ -207,43 +202,43 @@
   <!-- Tab: Privacy & DPDP -->
   <section id="dash-pane-privacy" class="hidden" style="display:flex; flex-direction:column; gap:1.25rem; max-width:44rem;">
     <div>
-      <h2 class="font-display" style="margin:0; font-size:1.5rem;">Privacy &amp; Consent Controls</h2>
-      <p class="text-muted" style="font-size:0.82rem; margin:0.3rem 0 0;">
-        Compliant with India's Digital Personal Data Protection (DPDP) Act. Preferences are saved in SQLite.
+      <h2 style="font-size:1.35rem;">Privacy and data consent</h2>
+      <p class="text-muted" style="font-size:0.86rem; margin:0.35rem 0 0;">
+        Managed under India's Digital Personal Data Protection (DPDP) Act and stored in SQLite.
       </p>
     </div>
 
-    <div class="cp-card" style="display:flex; flex-direction:column; gap:1rem;">
+    <div class="cp-card" style="display:flex; flex-direction:column; gap:1.1rem;">
       <label style="display:flex; justify-content:space-between; align-items:center; gap:1rem; cursor:pointer;">
         <span>
-          <strong style="display:block; font-size:0.875rem;">Essential Career Guidance Processing</strong>
-          <span class="text-muted" style="font-size:0.78rem;">Required to compute ATS scores and generate 90-day roadmaps.</span>
+          <strong style="display:block; font-size:0.9rem;">Essential career guidance processing</strong>
+          <span class="text-muted" style="font-size:0.82rem;">Computes ATS scores and generates your 90-day roadmap.</span>
         </span>
         <input type="checkbox" id="consent-data-processing" {% if state.consents.dataProcessing %}checked{% endif %} />
       </label>
 
-      <label style="display:flex; justify-content:space-between; align-items:center; gap:1rem; border-top:1px solid var(--border-subtle); padding-top:0.85rem; cursor:pointer;">
+      <label style="display:flex; justify-content:space-between; align-items:center; gap:1rem; cursor:pointer;">
         <span>
-          <strong style="display:block; font-size:0.875rem;">WhatsApp &amp; Email Career Alerts</strong>
-          <span class="text-muted" style="font-size:0.78rem;">Weekly milestone notifications and verified placement openings.</span>
+          <strong style="display:block; font-size:0.9rem;">WhatsApp and email career alerts</strong>
+          <span class="text-muted" style="font-size:0.82rem;">Weekly milestone updates and verified job notifications.</span>
         </span>
         <input type="checkbox" id="consent-whatsapp" {% if state.consents.whatsappUpdates %}checked{% endif %} />
       </label>
 
-      <label style="display:flex; justify-content:space-between; align-items:center; gap:1rem; border-top:1px solid var(--border-subtle); padding-top:0.85rem; cursor:pointer;">
+      <label style="display:flex; justify-content:space-between; align-items:center; gap:1rem; cursor:pointer;">
         <span>
-          <strong style="display:block; font-size:0.875rem;">Model Training Opt-In (Off by default)</strong>
-          <span class="text-muted" style="font-size:0.78rem;">Permit anonymized resume patterns to improve placement models.</span>
+          <strong style="display:block; font-size:0.9rem;">Anonymous model improvement</strong>
+          <span class="text-muted" style="font-size:0.82rem;">Off by default. Allows anonymized patterns to improve guidance.</span>
         </span>
         <input type="checkbox" id="consent-model-training" {% if state.consents.modelTraining %}checked{% endif %} />
       </label>
     </div>
 
     <div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
-      <a href="/api/dashboard/export" class="cp-btn cp-btn-outline">⬇ Export Complete Data (JSON)</a>
-      <button type="button" id="dpdp-delete-btn" class="cp-btn cp-btn-danger">🗑 Request Account &amp; Data Deletion</button>
+      <a href="/api/dashboard/export" class="cp-btn cp-btn-outline">Export data (JSON)</a>
+      <button type="button" id="dpdp-delete-btn" class="cp-btn cp-btn-danger">Request data deletion</button>
     </div>
-    <p id="dpdp-status-msg" class="text-brand font-mono" style="font-size:0.78rem; margin:0;">
+    <p id="dpdp-status-msg" class="text-brand" style="font-size:0.84rem; margin:0;">
       {% if state.deletionRequestedAt %}Deletion requested at {{ state.deletionRequestedAt }} — scheduled for purge within 30 days.{% endif %}
     </p>
   </section>

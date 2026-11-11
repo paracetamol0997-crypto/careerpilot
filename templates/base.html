@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
   <title>{% block title %}CareerPilot — Personal Career Guide for College Students{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <script>
     (function(){
       try {
-        if (localStorage.getItem('careerpilot_theme') === 'dark') {
+        var saved = localStorage.getItem('careerpilot_theme');
+        if (saved === 'dark' || (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
           document.documentElement.classList.add('dark');
         }
       } catch (e) {}
@@ -18,38 +20,49 @@
   </script>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
 </head>
-<body class="paper-grain" data-page="{{ page }}">
+<body data-page="{{ page }}">
   <header class="cp-navbar">
     <div class="cp-navbar-inner">
       <div class="cp-nav-left">
-        <div role="group" aria-label="Theme Switcher" class="cp-theme-toggle">
-          <button type="button" class="cp-theme-btn" data-theme-set="light" aria-pressed="true">☀ Light</button>
-          <button type="button" class="cp-theme-btn" data-theme-set="dark" aria-pressed="false">🌙 Dark</button>
-        </div>
-
         <a href="{{ url_for('pages.home') }}" class="cp-brand-mark">
-          <span class="cp-brand-badge">CP</span>
-          <span class="cp-brand-name">CareerPilot</span>
+          <svg class="cp-brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"/>
+            <polygon points="15.5 8.5 13.5 13.5 8.5 15.5 10.5 10.5 15.5 8.5"/>
+          </svg>
+          <span>CareerPilot</span>
         </a>
       </div>
 
       <nav class="cp-nav-links" aria-label="Primary Navigation">
-        <a href="{{ url_for('pages.chat_page') }}" class="cp-nav-link {% if page == 'chat' %}active{% endif %}">Co-Pilot</a>
+        <a href="{{ url_for('pages.chat_page') }}" class="cp-nav-link {% if page == 'chat' %}active{% endif %}">Advisor</a>
         <a href="{{ url_for('pages.dashboard_page') }}" class="cp-nav-link {% if page == 'dashboard' %}active{% endif %}">My Space</a>
-        <a href="{{ url_for('pages.admin_page') }}" class="cp-nav-link {% if page == 'admin' %}active{% endif %}">Admin</a>
+        <a href="{{ url_for('pages.admin_page') }}" class="cp-nav-link {% if page == 'admin' %}active{% endif %}">Telemetry</a>
       </nav>
 
-      <div id="nav-auth-slot">
-        {% if state.isRegistered and state.user %}
-          <a href="{{ url_for('pages.dashboard_page') }}" class="cp-verified-pill">
-            ✓ {{ state.user.name }}
-          </a>
-        {% else %}
-          <button type="button" class="cp-save-pill" data-open-reg>
-            <span>Save Progress</span>
-            <span class="cp-save-dot">→</span>
+      <div class="cp-nav-right">
+        <div role="group" aria-label="Theme Switcher" class="cp-theme-toggle">
+          <button type="button" class="cp-theme-btn" data-theme-set="light" aria-pressed="true" aria-label="Light theme">
+            <svg class="cp-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+            <span>Light</span>
           </button>
-        {% endif %}
+          <button type="button" class="cp-theme-btn" data-theme-set="dark" aria-pressed="false" aria-label="Dark theme">
+            <svg class="cp-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <span>Dark</span>
+          </button>
+        </div>
+
+        <div id="nav-auth-slot">
+          {% if state.isRegistered and state.user %}
+            <a href="{{ url_for('pages.dashboard_page') }}" class="cp-btn cp-btn-outline cp-btn-sm">
+              <svg class="cp-icon text-pass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>{{ state.user.name }}</span>
+            </a>
+          {% else %}
+            <button type="button" class="cp-btn cp-btn-primary cp-btn-sm" data-open-reg>
+              Save progress
+            </button>
+          {% endif %}
+        </div>
       </div>
     </div>
   </header>
@@ -61,52 +74,52 @@
   {% if page != 'chat' %}
   <footer class="cp-footer">
     <div class="container" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem;">
-      <div style="display:flex; align-items:center; gap:0.6rem;">
-        <strong class="font-mono" style="color:var(--text-primary);">CP/</strong>
-        <strong style="color:var(--text-primary);">CareerPilot Python + Flask</strong>
-        <span>· India DPDP Act Compliant</span>
+      <div>
+        <strong style="color:var(--text-primary); font-weight:600;">CareerPilot</strong>
+        <span style="margin-left:0.5rem;">India DPDP compliant</span>
       </div>
-      <div class="font-mono" style="display:flex; gap:1.5rem; text-transform:uppercase; font-size:0.7rem;">
-        <a href="{{ url_for('pages.dashboard_page') }}">Privacy &amp; Consent</a>
-        <a href="{{ url_for('pages.admin_page') }}">Admin &amp; Telemetry</a>
+      <div style="display:flex; gap:1.5rem;">
+        <a href="{{ url_for('pages.dashboard_page') }}">Privacy controls</a>
+        <a href="{{ url_for('pages.admin_page') }}">Telemetry</a>
       </div>
     </div>
   </footer>
   {% endif %}
 
-  <!-- Native <dialog> Modals (Modern Web Guidance) -->
   <dialog id="resume-dialog" class="cp-dialog" closedby="any" aria-labelledby="resume-dialog-title">
     <div class="cp-dialog-head">
       <div>
-        <h3 id="resume-dialog-title" style="margin:0; font-size:1rem; font-weight:600;">Check Resume ATS Score</h3>
-        <div class="font-mono text-subtle" style="font-size:0.7rem;">Deterministic 100-pt rubric · 3 Fixable Mistakes</div>
+        <h3 id="resume-dialog-title" style="font-size:1.05rem;">Analyze resume ATS score</h3>
+        <p class="text-subtle" style="font-size:0.82rem; margin:0.2rem 0 0;">100-point rubric with three actionable rewrites</p>
       </div>
-      <button type="button" class="cp-close-btn" data-close-dialog="resume-dialog" aria-label="Close modal">✕</button>
+      <button type="button" class="cp-close-btn" data-close-dialog="resume-dialog" aria-label="Close modal">
+        <svg class="cp-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
     <div class="cp-dialog-body">
       <div class="cp-tabs" style="margin-bottom:1rem;">
-        <button type="button" class="cp-tab-btn active" data-resume-tab="paste">Paste Resume Text</button>
-        <button type="button" class="cp-tab-btn" data-resume-tab="upload">Upload PDF / DOCX / TXT</button>
+        <button type="button" class="cp-tab-btn active" data-resume-tab="paste">Paste text</button>
+        <button type="button" class="cp-tab-btn" data-resume-tab="upload">Upload file</button>
       </div>
-      <div id="resume-modal-error" class="cp-badge cp-badge-fix hidden" style="width:100%; margin-bottom:0.75rem; padding:0.55rem 0.75rem;"></div>
+      <div id="resume-modal-error" class="cp-status-note cp-status-fix hidden" style="width:100%; margin-bottom:0.75rem;"></div>
       <form id="resume-audit-form" style="display:flex; flex-direction:column; gap:0.9rem;">
         <div id="resume-paste-pane" style="display:flex; flex-direction:column; gap:0.5rem;">
-          <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
-            <label for="resume-text-input" class="text-muted">Paste your resume text or bullets:</label>
-            <button type="button" id="insert-sample-resume-btn" style="border:none; background:none; color:var(--accent-brand-ink); font-weight:600; cursor:pointer;">Insert Sample Resume</button>
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8rem;">
+            <label for="resume-text-input" class="text-muted">Resume text or bullet points</label>
+            <button type="button" id="insert-sample-resume-btn" class="cp-btn cp-btn-ghost cp-btn-sm" style="padding:0.2rem 0.5rem; color:var(--accent-ink);">Insert sample</button>
           </div>
           <textarea id="resume-text-input" class="cp-textarea font-mono" rows="9" placeholder="Paste your education, skills, projects, and experience here..." autofocus></textarea>
         </div>
 
         <div id="resume-upload-pane" class="hidden" style="display:flex; flex-direction:column; gap:0.75rem;">
-          <label style="border:2px dashed var(--border-strong); border-radius:0.75rem; padding:1.75rem; text-align:center; cursor:pointer; background:var(--surface-base);">
-            <div style="font-weight:600; font-size:0.85rem;" id="resume-file-label">Click to choose a PDF, DOCX, or TXT file</div>
-            <div class="font-mono text-subtle" style="font-size:0.7rem; margin-top:0.3rem;">Magic-byte verified · Malware scanned · Max 5 MB</div>
+          <label class="cp-upload-zone">
+            <div style="font-weight:600; font-size:0.88rem;" id="resume-file-label">Choose a PDF, DOCX, or TXT file</div>
+            <div class="text-subtle" style="font-size:0.78rem; margin-top:0.25rem;">Up to 5 MB, scanned automatically</div>
             <input type="file" id="resume-file-input" accept=".pdf,.docx,.txt" class="hidden" />
           </label>
         </div>
 
-        <button type="submit" id="resume-submit-btn" class="cp-btn cp-btn-cta" style="width:100%;">Analyze ATS Score →</button>
+        <button type="submit" id="resume-submit-btn" class="cp-btn cp-btn-primary" style="width:100%;">Score resume</button>
       </form>
     </div>
   </dialog>
@@ -114,12 +127,14 @@
   <dialog id="interview-dialog" class="cp-dialog" closedby="any" aria-labelledby="interview-dialog-title">
     <div class="cp-dialog-head">
       <div>
-        <h3 id="interview-dialog-title" style="margin:0; font-size:1rem; font-weight:600;">5-Min Mock Interview Practice</h3>
-        <div class="font-mono text-subtle" style="font-size:0.7rem;">Supportive &amp; constructive · College fresher rubric</div>
+        <h3 id="interview-dialog-title" style="font-size:1.05rem;">Mock interview practice</h3>
+        <p class="text-subtle" style="font-size:0.82rem; margin:0.2rem 0 0;">5-minute technical and behavioral evaluation</p>
       </div>
       <div style="display:flex; align-items:center; gap:0.6rem;">
-        <span id="interview-timer" class="cp-badge font-mono tabular-nums">⏱ 05:00</span>
-        <button type="button" class="cp-close-btn" data-close-dialog="interview-dialog" aria-label="Close modal">✕</button>
+        <span id="interview-timer" class="cp-status-note font-mono tabular-nums">05:00</span>
+        <button type="button" class="cp-close-btn" data-close-dialog="interview-dialog" aria-label="Close modal">
+          <svg class="cp-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
     </div>
     <div class="cp-dialog-body" id="interview-dialog-body"></div>
@@ -128,93 +143,60 @@
   <dialog id="reg-dialog" class="cp-dialog" closedby="any" aria-labelledby="reg-dialog-title">
     <div class="cp-dialog-head">
       <div>
-        <h3 id="reg-dialog-title" style="margin:0; font-size:1rem; font-weight:600;">Save Progress &amp; Unlock Features</h3>
-        <div class="font-mono text-subtle" style="font-size:0.7rem;">Zero spam · Takes 15 seconds · 100% Free</div>
+        <h3 id="reg-dialog-title" style="font-size:1.05rem;">Save progress across sessions</h3>
+        <p class="text-subtle" style="font-size:0.82rem; margin:0.2rem 0 0;">Unlocks full 12-week roadmap, all resume fixes, and mock interviews</p>
       </div>
-      <button type="button" class="cp-close-btn" data-close-dialog="reg-dialog" aria-label="Close modal">✕</button>
+      <button type="button" class="cp-close-btn" data-close-dialog="reg-dialog" aria-label="Close modal">
+        <svg class="cp-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
     <div class="cp-dialog-body" style="display:flex; flex-direction:column; gap:1rem;">
-      <div class="cp-card" style="padding:0.85rem; background:var(--surface-base); font-size:0.78rem; display:flex; flex-direction:column; gap:0.35rem;">
-        <div>✓ Full 90-Day (12-Week) Personalised Roadmap</div>
-        <div>✓ Unlock ATS Mistakes #2 &amp; #3 with Before/After rewrites</div>
-        <div>✓ 5-Minute Mock Interview with 4-pillar scoring report</div>
-      </div>
-
       <div class="cp-tabs">
         <button type="button" class="cp-tab-btn active" data-auth-tab="phone">Phone OTP</button>
         <button type="button" class="cp-tab-btn" data-auth-tab="google">Google</button>
-        <button type="button" class="cp-tab-btn" data-auth-tab="magic_link">Magic Link</button>
+        <button type="button" class="cp-tab-btn" data-auth-tab="magic_link">Magic link</button>
       </div>
 
-      <div id="reg-error" class="cp-badge cp-badge-fix hidden" style="width:100%; padding:0.5rem;"></div>
+      <div id="reg-error" class="cp-status-note cp-status-fix hidden" style="width:100%;"></div>
 
       <div id="auth-pane-phone" style="display:flex; flex-direction:column; gap:0.75rem;">
         <form id="phone-otp-send-form" style="display:flex; flex-direction:column; gap:0.65rem;">
-          <label for="reg-phone-input" style="font-size:0.75rem; font-weight:500;">Mobile Number (India +91)</label>
+          <label for="reg-phone-input" style="font-size:0.82rem; font-weight:500;">Mobile number (India +91)</label>
           <input id="reg-phone-input" type="tel" class="cp-input" placeholder="+91 98765 43210" required autofocus />
-          <button type="submit" class="cp-btn cp-btn-primary">Send Verification OTP →</button>
+          <button type="submit" class="cp-btn cp-btn-primary">Send OTP</button>
         </form>
         <form id="phone-otp-verify-form" class="hidden" style="display:flex; flex-direction:column; gap:0.65rem;">
-          <div class="cp-badge">Demo OTP generated: <strong class="font-mono">7890</strong></div>
-          <label for="reg-otp-input" style="font-size:0.75rem; font-weight:500;">Enter 4-digit OTP</label>
+          <div class="cp-status-note">Demo verification code: <strong class="font-mono">7890</strong></div>
+          <label for="reg-otp-input" style="font-size:0.82rem; font-weight:500;">Enter 4-digit code</label>
           <input id="reg-otp-input" type="text" maxlength="6" class="cp-input font-mono" style="text-align:center; letter-spacing:0.25em; font-size:1.1rem;" placeholder="7890" required />
-          <button type="submit" class="cp-btn cp-btn-primary">Confirm &amp; Unlock Features</button>
+          <button type="submit" class="cp-btn cp-btn-primary">Verify and continue</button>
         </form>
       </div>
 
-      <div id="auth-pane-google" class="hidden" style="display:flex; flex-direction:column; gap:0.75rem; text-align:center;">
-        <p class="text-muted" style="font-size:0.8rem; margin:0;">Sign in with your Google account. Your guest profile and history migrate automatically.</p>
+      <div id="auth-pane-google" class="hidden" style="display:flex; flex-direction:column; gap:0.75rem;">
+        <p class="text-muted" style="font-size:0.84rem; margin:0;">Your current guest audits and chats migrate automatically.</p>
         <button type="button" id="google-oauth-btn" class="cp-btn cp-btn-outline">Continue with Google</button>
       </div>
 
       <div id="auth-pane-magic" class="hidden" style="display:flex; flex-direction:column; gap:0.75rem;">
         <form id="magic-link-send-form" style="display:flex; flex-direction:column; gap:0.65rem;">
-          <label for="reg-email-input" style="font-size:0.75rem; font-weight:500;">College / Personal Email</label>
+          <label for="reg-email-input" style="font-size:0.82rem; font-weight:500;">Email address</label>
           <input id="reg-email-input" type="email" class="cp-input" placeholder="student@college.edu" required />
-          <button type="submit" class="cp-btn cp-btn-primary">Send Magic Link →</button>
+          <button type="submit" class="cp-btn cp-btn-primary">Send magic link</button>
         </form>
         <div id="magic-link-verify-box" class="hidden" style="display:flex; flex-direction:column; gap:0.65rem;">
-          <div class="cp-badge cp-badge-pass" id="magic-link-msg">Magic Link Sent</div>
-          <button type="button" id="magic-link-verify-btn" class="cp-btn cp-btn-primary">Simulate 1-Tap Magic Link Click</button>
+          <div class="cp-status-note cp-status-pass" id="magic-link-msg">Magic link sent</div>
+          <button type="button" id="magic-link-verify-btn" class="cp-btn cp-btn-primary">Complete sign-in</button>
         </div>
       </div>
 
-      <div style="border-top:1px solid var(--border-subtle); padding-top:0.75rem;">
-        <button type="button" id="instant-demo-verify-btn" class="cp-btn cp-btn-outline cp-btn-sm" style="width:100%;">
-          1-Click Instant Demo Verification
+      <div style="padding-top:0.25rem;">
+        <button type="button" id="instant-demo-verify-btn" class="cp-btn cp-btn-ghost cp-btn-sm" style="width:100%;">
+          Use instant demo account
         </button>
       </div>
     </div>
   </dialog>
-
-  {% if page == 'home' %}
-  <div class="cp-floating-wrap" id="floating-widget">
-    <button type="button" class="cp-floating-launcher" id="floating-open-btn">
-      <span style="width:1.75rem; height:1.75rem; border-radius:999px; background:var(--accent-cta); display:inline-flex; align-items:center; justify-content:center;">💬</span>
-      <span style="text-align:left;">
-        <span style="display:block; font-size:0.75rem; font-weight:600;">Career Guide</span>
-        <span class="font-mono" style="display:block; font-size:0.625rem; opacity:0.8;">30s Resume &amp; Role Check</span>
-      </span>
-    </button>
-
-    <div class="cp-floating-panel hidden" id="floating-panel">
-      <div style="padding:0.75rem 1rem; border-bottom:1px solid var(--border-subtle); background:var(--surface-base); display:flex; align-items:center; justify-content:space-between;">
-        <div style="display:flex; align-items:center; gap:0.6rem;">
-          <span class="cp-brand-badge">CP/</span>
-          <div>
-            <div style="font-size:0.78rem; font-weight:600;">CareerPilot Studio</div>
-            <div class="font-mono text-subtle" style="font-size:0.65rem;">Personal Career Guide</div>
-          </div>
-        </div>
-        <div style="display:flex; align-items:center; gap:0.35rem;">
-          <a href="{{ url_for('pages.chat_page') }}" class="cp-close-btn" title="Expand to Full Page" style="font-size:0.85rem;">↗</a>
-          <button type="button" class="cp-close-btn" id="floating-close-btn" aria-label="Close Chat">✕</button>
-        </div>
-      </div>
-      <div class="cp-chat-shell embedded" id="embedded-chat-root" style="flex:1; overflow:hidden;"></div>
-    </div>
-  </div>
-  {% endif %}
 
   <script>
     window.__CAREERPILOT_INITIAL_STATE__ = {{ state | tojson }};
