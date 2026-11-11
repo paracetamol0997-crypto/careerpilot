@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+{% block title %}My Space — CareerPilot Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top:2rem; padding-bottom:4rem; display:flex; flex-direction:column; gap:1.75rem;">
+  <div class="cp-card" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1.5rem;">
+    <div style="display:flex; flex-direction:column; gap:0.65rem;">
+      <div class="cp-section-label"><span class="cp-coral-dot"></span><span>My Space · Career Command</span></div>
+      <h1 class="font-poster" style="font-size:clamp(2rem, 4.5vw, 3rem); text-transform:uppercase; margin:0; line-height:1;">
+        {% if state.profile %}{{ state.profile.branch }} Student {% else %}Your {% endif %}
+        <span class="text-brand">Career Dossier</span>
+      </h1>
+      <div style="display:flex; flex-wrap:wrap; gap:0.5rem; font-family:var(--font-mono); font-size:0.75rem;">
+        <span class="cp-badge">Target: <strong>{{ state.profile.targetRole if state.profile else "Software Developer" }}</strong></span>
+        <span class="cp-badge">Year: <strong>{{ state.profile.year if state.profile else "3rd" }}</strong></span>
+        <span class="cp-badge {% if state.isRegistered %}cp-badge-pass{% endif %}">
+          Mode: <strong>{{ "Verified (SQLite)" if state.isRegistered else "Guest (SQLite Session)" }}</strong>
+        </span>
+      </div>
+    </div>
+    <a href="{{ url_for('pages.chat_page') }}" class="cp-btn cp-btn-cta">Open Co-Pilot Chat →</a>
+  </div>
+
+  <div class="cp-tabs" id="dashboard-tabs">
+    <button type="button" class="cp-tab-btn active" data-dash-tab="overview">Overview</button>
+    <button type="button" class="cp-tab-btn" data-dash-tab="resume">Resume Trend ({{ state.resumeHistory | length }})</button>
+    <button type="button" class="cp-tab-btn" data-dash-tab="roadmap">90-Day Roadmap ({{ 12 if state.roadmap else 0 }})</button>
+    <button type="button" class="cp-tab-btn" data-dash-tab="jobs">Saved Jobs ({{ state.savedJobs | length }})</button>
+    <button type="button" class="cp-tab-btn" data-dash-tab="interviews">Mock Interviews ({{ state.interviewHistory | length }})</button>
+    <button type="button" class="cp-tab-btn" data-dash-tab="privacy">Privacy &amp; DPDP</button>
+  </div>
+
+  <!-- Tab: Overview -->
+  <section id="dash-pane-overview" style="display:flex; flex-direction:column; gap:1.5rem;">
+    <div class="cp-grid-3">
+      <div class="cp-card" style="display:flex; flex-direction:column; justify-content:space-between; gap:1rem;">
+        <div class="font-mono text-subtle" style="font-size:0.7rem; text-transform:uppercase;">Latest ATS Score</div>
+        <div>
+          <div class="font-mono tabular-nums" style="font-size:2.2rem; font-weight:700;">
+            {{ state.resumeHistory[0].score if state.resumeHistory else "—" }}
+            <span class="text-subtle" style="font-size:0.85rem; font-weight:400;">/ 100</span>
+          </div>
+          <p class="text-muted" style="font-size:0.78rem; margin:0.35rem 0 0;">
+            {% if state.resumeHistory %}{{ state.resumeHistory | length }} audit(s) saved.{% else %}No resume audited yet.{% endif %}
+          </p>
+        </div>
+        <a href="{{ url_for('pages.chat_page', intent='resume_check') }}" class="cp-btn cp-btn-outline cp-btn-sm">
+          {{ "Re-Audit Resume" if state.resumeHistory else "Audit Resume Free" }} →
+        </a>
+      </div>
+
+      <div class="cp-card" style="display:flex; flex-direction:column; justify-content:space-between; gap:1rem;">
+        <div class="font-mono text-subtle" style="font-size:0.7rem; text-transform:uppercase;">Roadmap Sequence</div>
+        <div>
+          <div class="font-mono" style="font-size:2.2rem; font-weight:700;">{{ "12 Wks" if state.roadmap else "Pending" }}</div>
+          <p class="text-muted" style="font-size:0.78rem; margin:0.35rem 0 0;">
+            {{ (state.roadmap.progressPercent ~ "% completed across vetted guides.") if state.roadmap else "Generate your 12-week milestone track." }}
+          </p>
+        </div>
+        <a href="{{ url_for('pages.chat_page', intent='roadmap') }}" class="cp-btn cp-btn-outline cp-btn-sm">
+          {{ "Explore Weeks 1–12" if state.roadmap else "Build Custom Roadmap" }} →
+        </a>
+      </div>
+
+      <div class="cp-card" style="display:flex; flex-direction:column; justify-content:space-between; gap:1rem;">
+        <div class="font-mono text-subtle" style="font-size:0.7rem; text-transform:uppercase;">Interview Rating</div>
+        <div>
+          <div class="font-mono tabular-nums" style="font-size:2.2rem; font-weight:700;">
+            {{ state.interviewHistory[0].overallScore if state.interviewHistory else "—" }}
+            <span class="text-subtle" style="font-size:0.85rem; font-weight:400;">/ 10</span>
+          </div>
+          <p class="text-muted" style="font-size:0.78rem; margin:0.35rem 0 0;">
+            {% if state.interviewHistory %}{{ state.interviewHistory | length }} 5-minute drill(s) completed.{% else %}Practice fresher technical rounds.{% endif %}
+          </p>
+        </div>
+        <a href="{{ url_for('pages.chat_page', intent='mock_interview') }}" class="cp-btn cp-btn-outline cp-btn-sm">Start 5-Min Practice →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tab: Resume History -->
+  <section id="dash-pane-resume" class="hidden" style="display:flex; flex-direction:column; gap:1rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h2 class="font-display" style="margin:0; font-size:1.5rem;">Resume Audit History</h2>
+      <a href="{{ url_for('pages.chat_page', intent='resume_check') }}" class="cp-btn cp-btn-primary cp-btn-sm">New Resume Audit</a>
+    </div>
+    {% if not state.resumeHistory %}
+      <div class="cp-card" style="text-align:center; padding:2.5rem;">
+        <p class="text-muted">No resumes audited yet. Run a deterministic 100-point ATS check in Co-Pilot chat.</p>
+        <a href="{{ url_for('pages.chat_page', intent='resume_check') }}" class="cp-btn cp-btn-primary cp-btn-sm">Run Free Audit</a>
+      </div>
+    {% else %}
+      {% for res in state.resumeHistory %}
+        <div class="cp-card" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem;">
+          <div style="max-width:40rem;">
+            <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.35rem;">
+              <span class="cp-badge">Audit #{{ loop.revindex }}</span>
+              <strong>{{ res.targetRole }}</strong>
+            </div>
+            <p class="text-muted" style="margin:0; font-size:0.82rem;">{{ res.verdict }}</p>
+          </div>
+          <div style="text-align:right;">
+            <div class="font-mono text-brand tabular-nums" style="font-size:1.75rem; font-weight:700;">{{ res.score }}</div>
+            <div class="font-mono text-subtle" style="font-size:0.7rem;">/ 100 ATS</div>
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </section>
+
+  <!-- Tab: 90-Day Roadmap -->
+  <section id="dash-pane-roadmap" class="hidden" style="display:flex; flex-direction:column; gap:1rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h2 class="font-display" style="margin:0; font-size:1.5rem;">90-Day Roadmap Track</h2>
+      <a href="{{ url_for('pages.chat_page', intent='roadmap') }}" class="cp-btn cp-btn-primary cp-btn-sm">Open in Chat</a>
+    </div>
+    {% if not state.roadmap %}
+      <div class="cp-card" style="text-align:center; padding:2.5rem;">
+        <p class="text-muted">No roadmap generated yet. Generate your 12-week sequence with vetted free resources.</p>
+        <a href="{{ url_for('pages.chat_page', intent='roadmap') }}" class="cp-btn cp-btn-primary cp-btn-sm">Generate 90-Day Roadmap</a>
+      </div>
+    {% else %}
+      {% for wk in state.roadmap.weeks %}
+        <div class="cp-card" style="display:flex; flex-direction:column; gap:0.75rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <span class="cp-badge">Week {{ wk.weekNumber }} · {{ wk.phase }}</span>
+              <h3 style="margin:0.4rem 0 0; font-size:1rem;">{{ wk.title }}</h3>
+            </div>
+            <span class="cp-badge {{ 'cp-badge-warn' if wk.isLocked else 'cp-badge-pass' }}">
+              {{ "Locked (Guest)" if wk.isLocked else "Unlocked" }}
+            </span>
+          </div>
+          <p class="text-muted" style="margin:0; font-size:0.82rem;">{{ wk.description }}</p>
+          {% if not wk.isLocked %}
+            <div style="display:flex; flex-direction:column; gap:0.4rem;">
+              {% for task in wk.tasks %}
+                <label style="display:flex; align-items:center; gap:0.6rem; font-size:0.82rem; cursor:pointer;">
+                  <input type="checkbox" class="dash-task-checkbox" data-week="{{ wk.weekNumber }}" data-task="{{ task.id }}" {% if task.completed %}checked{% endif %} />
+                  <span style="{% if task.completed %}text-decoration:line-through; opacity:0.6;{% endif %}">{{ task.title }}</span>
+                </label>
+              {% endfor %}
+            </div>
+            <a href="{{ wk.resourceUrl }}" target="_blank" rel="noopener noreferrer" class="font-mono text-brand" style="font-size:0.75rem;">
+              ↗ {{ wk.resourceTitle }}
+            </a>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% endif %}
+  </section>
+
+  <!-- Tab: Saved Jobs -->
+  <section id="dash-pane-jobs" class="hidden" style="display:flex; flex-direction:column; gap:1rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h2 class="font-display" style="margin:0; font-size:1.5rem;">Verified Saved Jobs</h2>
+      <a href="{{ url_for('pages.chat_page', intent='jobs') }}" class="cp-btn cp-btn-primary cp-btn-sm">Search Matches</a>
+    </div>
+    {% if not state.savedJobs %}
+      <div class="cp-card" style="text-align:center; padding:2.5rem;">
+        <p class="text-muted">No saved jobs yet. Bookmark fresher matches in Co-Pilot chat.</p>
+        <a href="{{ url_for('pages.chat_page', intent='jobs') }}" class="cp-btn cp-btn-primary cp-btn-sm">Browse Jobs</a>
+      </div>
+    {% else %}
+      {% for job in state.savedJobs %}
+        <div class="cp-card" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem;">
+          <div>
+            <span class="cp-badge cp-badge-pass">Verified Recruiter · {{ job.location }}</span>
+            <h3 style="margin:0.4rem 0 0.2rem; font-size:1rem;">{{ job.title }}</h3>
+            <p class="text-muted" style="margin:0; font-size:0.8rem;">{{ job.company }} · {{ job.salaryRange }}</p>
+          </div>
+          <a href="{{ job.applyUrl }}" target="_blank" rel="noopener noreferrer" class="cp-btn cp-btn-primary cp-btn-sm">Apply Directly ↗</a>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </section>
+
+  <!-- Tab: Interviews -->
+  <section id="dash-pane-interviews" class="hidden" style="display:flex; flex-direction:column; gap:1rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h2 class="font-display" style="margin:0; font-size:1.5rem;">Mock Interview History</h2>
+      <a href="{{ url_for('pages.chat_page', intent='mock_interview') }}" class="cp-btn cp-btn-primary cp-btn-sm">Start 5-Min Mock Interview</a>
+    </div>
+    {% if not state.interviewHistory %}
+      <div class="cp-card" style="text-align:center; padding:2.5rem;">
+        <p class="text-muted">No mock interviews recorded yet.</p>
+        <a href="{{ url_for('pages.chat_page', intent='mock_interview') }}" class="cp-btn cp-btn-primary cp-btn-sm">Start Practice Session</a>
+      </div>
+    {% else %}
+      {% for rep in state.interviewHistory %}
+        <div class="cp-card" style="display:flex; flex-direction:column; gap:0.85rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>Session #{{ loop.revindex }} — 5-Min Mock Interview</strong>
+            <span class="font-mono text-brand tabular-nums" style="font-size:1.4rem; font-weight:700;">{{ rep.overallScore }} / 10</span>
+          </div>
+          <div class="cp-grid-4">
+            <div class="cp-card" style="padding:0.65rem; text-align:center;"><div class="font-mono text-subtle" style="font-size:0.65rem;">Accuracy</div><strong>{{ rep.contentAccuracyScore }}/10</strong></div>
+            <div class="cp-card" style="padding:0.65rem; text-align:center;"><div class="font-mono text-subtle" style="font-size:0.65rem;">Clarity</div><strong>{{ rep.clarityScore }}/10</strong></div>
+            <div class="cp-card" style="padding:0.65rem; text-align:center;"><div class="font-mono text-subtle" style="font-size:0.65rem;">Confidence</div><strong>{{ rep.confidenceScore }}/10</strong></div>
+            <div class="cp-card" style="padding:0.65rem; text-align:center;"><div class="font-mono text-subtle" style="font-size:0.65rem;">Comm.</div><strong>{{ rep.communicationScore }}/10</strong></div>
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </section>
+
+  <!-- Tab: Privacy & DPDP -->
+  <section id="dash-pane-privacy" class="hidden" style="display:flex; flex-direction:column; gap:1.25rem; max-width:44rem;">
+    <div>
+      <h2 class="font-display" style="margin:0; font-size:1.5rem;">Privacy &amp; Consent Controls</h2>
+      <p class="text-muted" style="font-size:0.82rem; margin:0.3rem 0 0;">
+        Compliant with India's Digital Personal Data Protection (DPDP) Act. Preferences are saved in SQLite.
+      </p>
+    </div>
+
+    <div class="cp-card" style="display:flex; flex-direction:column; gap:1rem;">
+      <label style="display:flex; justify-content:space-between; align-items:center; gap:1rem; cursor:pointer;">
+        <span>
+          <strong style="display:block; font-size:0.875rem;">Essential Career Guidance Processing</strong>
+          <span class="text-muted" style="font-size:0.78rem;">Required to compute ATS scores and generate 90-day roadmaps.</span>
+        </span>
+        <input type="checkbox" id="consent-data-processing" {% if state.consents.dataProcessing %}checked{% endif %} />
+      </label>
+
+      <label style="display:flex; justify-content:space-between; align-items:center; gap:1rem; border-top:1px solid var(--border-subtle); padding-top:0.85rem; cursor:pointer;">
+        <span>
+          <strong style="display:block; font-size:0.875rem;">WhatsApp &amp; Email Career Alerts</strong>
+          <span class="text-muted" style="font-size:0.78rem;">Weekly milestone notifications and verified placement openings.</span>
+        </span>
+        <input type="checkbox" id="consent-whatsapp" {% if state.consents.whatsappUpdates %}checked{% endif %} />
+      </label>
+
+      <label style="display:flex; justify-content:space-between; align-items:center; gap:1rem; border-top:1px solid var(--border-subtle); padding-top:0.85rem; cursor:pointer;">
+        <span>
+          <strong style="display:block; font-size:0.875rem;">Model Training Opt-In (Off by default)</strong>
+          <span class="text-muted" style="font-size:0.78rem;">Permit anonymized resume patterns to improve placement models.</span>
+        </span>
+        <input type="checkbox" id="consent-model-training" {% if state.consents.modelTraining %}checked{% endif %} />
+      </label>
+    </div>
+
+    <div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
+      <a href="/api/dashboard/export" class="cp-btn cp-btn-outline">⬇ Export Complete Data (JSON)</a>
+      <button type="button" id="dpdp-delete-btn" class="cp-btn cp-btn-danger">🗑 Request Account &amp; Data Deletion</button>
+    </div>
+    <p id="dpdp-status-msg" class="text-brand font-mono" style="font-size:0.78rem; margin:0;">
+      {% if state.deletionRequestedAt %}Deletion requested at {{ state.deletionRequestedAt }} — scheduled for purge within 30 days.{% endif %}
+    </p>
+  </section>
+</div>
+{% endblock %}

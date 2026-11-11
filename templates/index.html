@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="cp-hero">
+  <div class="container">
+    <div class="cp-ticker">
+      <span>Audit</span><span class="cp-coral-dot"></span>
+      <span>Roadmap</span><span class="cp-coral-dot"></span>
+      <span>Verified Roles</span><span class="cp-coral-dot"></span>
+      <span>Mock Drills</span>
+    </div>
+
+    <h1 class="cp-hero-title">
+      Career Pilot
+      <span>Zero Judgment.</span>
+    </h1>
+
+    <div class="cp-hero-bottom">
+      <div style="max-width:28rem; display:flex; flex-direction:column; gap:1.25rem;">
+        <div style="width:1.75rem; height:1px; background:var(--text-primary);"></div>
+        <p class="font-mono" style="font-size:0.82rem; text-transform:uppercase; letter-spacing:0.08em; line-height:1.6; margin:0;">
+          Deterministic ATS resume audits, 90-day placement roadmaps, and mock interview practice for college students.
+        </p>
+        <div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
+          <a href="{{ url_for('pages.chat_page') }}" class="cp-btn cp-btn-cta cp-btn-lg">
+            <span>Start Career Chat</span> <span>→</span>
+          </a>
+          <button type="button" class="cp-btn cp-btn-outline cp-btn-lg font-mono" style="font-size:0.75rem; text-transform:uppercase;" data-launch-intent="resume_check">
+            Audit Resume
+          </button>
+        </div>
+      </div>
+
+      <div class="cp-feature-stack">
+        <button type="button" class="cp-feature-link" data-launch-intent="resume_check">
+          <span>📄</span>
+          <span>Deterministic<br/>ATS Rubric</span>
+        </button>
+        <button type="button" class="cp-feature-link" data-launch-intent="roadmap">
+          <span>🧭</span>
+          <span>90-Day Skill<br/>Roadmap</span>
+        </button>
+        <button type="button" class="cp-feature-link" data-launch-intent="jobs">
+          <span>💼</span>
+          <span>Scam-Shielded<br/>Fresher Jobs</span>
+        </button>
+        <button type="button" class="cp-feature-link" data-launch-intent="mock_interview">
+          <span>🎙️</span>
+          <span>5-Min Mock<br/>Interviews</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cp-section">
+  <div class="container" style="display:flex; flex-direction:column; gap:2.5rem;">
+    <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-end; gap:1rem; border-bottom:1px solid var(--border-subtle); padding-bottom:1.25rem;">
+      <div>
+        <div class="cp-section-label"><span class="cp-coral-dot"></span><span>02 / Core Toolkit</span></div>
+        <h2 class="font-poster text-brand" style="font-size:clamp(2rem, 4.5vw, 3rem); text-transform:uppercase; margin:0.4rem 0 0;">
+          Everything Required to Get Hired
+        </h2>
+      </div>
+      <p class="text-muted" style="max-width:26rem; font-size:0.875rem; margin:0;">
+        Purpose-built tools calibrated for Tier-2 and Tier-3 placements. Select any dossier to launch immediately.
+      </p>
+    </div>
+
+    <div class="cp-grid-2">
+      <div class="cp-card cp-dossier-card" data-launch-intent="resume_check">
+        <div style="display:flex; flex-direction:column; gap:1rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="font-mono text-muted" style="font-size:0.75rem; text-transform:uppercase;">📄 01 · ATS Rubric</span>
+            <span class="cp-badge cp-badge-pass tabular-nums">88 / 100</span>
+          </div>
+          <div style="border:1px solid var(--border-subtle); background:var(--surface-base); border-radius:0.55rem; padding:0.85rem; font-family:var(--font-mono); font-size:0.72rem; display:flex; flex-direction:column; gap:0.4rem;">
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:0.35rem;">
+              <span class="text-subtle">BULLET_REWRITE.DIFF</span>
+              <span class="text-pass">+14 pts</span>
+            </div>
+            <div class="text-fix" style="text-decoration:line-through; opacity:0.85;">- Built a Flask app for college students</div>
+            <div class="text-pass">+ Engineered Flask REST API reducing query latency by 38%</div>
+          </div>
+          <div>
+            <h3 style="margin:0 0 0.35rem; font-size:1.1rem;">Deterministic ATS Audit</h3>
+            <p class="text-muted" style="margin:0; font-size:0.85rem; line-height:1.5;">
+              Instant 100-point rubric score with 3 concrete before-and-after bullet rewrites tailored to your target role.
+            </p>
+          </div>
+        </div>
+        <div class="font-mono text-brand" style="border-top:1px solid var(--border-subtle); padding-top:0.75rem; font-size:0.75rem; text-transform:uppercase; display:flex; justify-content:space-between;">
+          <span>Score your resume free</span><span>→</span>
+        </div>
+      </div>
+
+      <div class="cp-card cp-dossier-card" data-launch-intent="roadmap">
+        <div style="display:flex; flex-direction:column; gap:1rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="font-mono text-muted" style="font-size:0.75rem; text-transform:uppercase;">🧭 02 · 90-Day Roadmap</span>
+            <span class="cp-badge">12 Weeks</span>
+          </div>
+          <div style="border:1px solid var(--border-subtle); background:var(--surface-base); border-radius:0.55rem; padding:0.85rem; display:flex; flex-direction:column; gap:0.65rem;">
+            <div class="font-mono text-muted" style="display:flex; justify-content:space-between; font-size:0.7rem;">
+              <strong class="text-brand">01. Foundation</strong><span>02. Projects</span><span>03. Placement</span>
+            </div>
+            <div class="cp-progress-track"><div class="cp-progress-fill" style="width:40%;"></div></div>
+            <div class="font-mono text-subtle" style="font-size:0.7rem;">Vetted free resources only · 1–2 hrs/day</div>
+          </div>
+          <div>
+            <h3 style="margin:0 0 0.35rem; font-size:1.1rem;">Structured Skill Sequence</h3>
+            <p class="text-muted" style="margin:0; font-size:0.85rem; line-height:1.5;">
+              Week-by-week 12-week syllabus paired strictly with verified free tutorials and portfolio milestones.
+            </p>
+          </div>
+        </div>
+        <div class="font-mono text-brand" style="border-top:1px solid var(--border-subtle); padding-top:0.75rem; font-size:0.75rem; text-transform:uppercase; display:flex; justify-content:space-between;">
+          <span>Generate your roadmap</span><span>→</span>
+        </div>
+      </div>
+
+      <div class="cp-card cp-dossier-card" data-launch-intent="jobs">
+        <div style="display:flex; flex-direction:column; gap:1rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="font-mono text-muted" style="font-size:0.75rem; text-transform:uppercase;">💼 03 · Verified Roles</span>
+            <span class="cp-badge cp-badge-pass">🛡 Scam Shield</span>
+          </div>
+          <div style="border:1px solid var(--border-subtle); background:var(--surface-base); border-radius:0.55rem; padding:0.85rem; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-weight:600; font-size:0.82rem;">Backend Engineer (Python / Flask)</div>
+              <div class="font-mono text-subtle" style="font-size:0.7rem;">Python · SQL · Bengaluru</div>
+            </div>
+            <span class="cp-badge text-brand tabular-nums">95% Match</span>
+          </div>
+          <div>
+            <h3 style="margin:0 0 0.35rem; font-size:1.1rem;">Skill-Grounded Opportunities</h3>
+            <p class="text-muted" style="margin:0; font-size:0.85rem; line-height:1.5;">
+              Unbiased fresher openings ranked on verified skills with automated scam and fee-request detection.
+            </p>
+          </div>
+        </div>
+        <div class="font-mono text-brand" style="border-top:1px solid var(--border-subtle); padding-top:0.75rem; font-size:0.75rem; text-transform:uppercase; display:flex; justify-content:space-between;">
+          <span>View curated jobs</span><span>→</span>
+        </div>
+      </div>
+
+      <div class="cp-card cp-dossier-card" data-launch-intent="mock_interview">
+        <div style="display:flex; flex-direction:column; gap:1rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="font-mono text-muted" style="font-size:0.75rem; text-transform:uppercase;">🎙️ 04 · Mock Interview</span>
+            <span class="cp-badge tabular-nums">⏱ 05:00</span>
+          </div>
+          <div style="border:1px solid var(--border-subtle); background:var(--surface-base); border-radius:0.55rem; padding:0.85rem; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-weight:600; font-size:0.82rem;">Fresher Technical &amp; Behavioral</div>
+              <div class="font-mono text-subtle" style="font-size:0.7rem;">6 questions · Voice or Text · Model answers</div>
+            </div>
+            <span class="cp-badge">4 Pillars</span>
+          </div>
+          <div>
+            <h3 style="margin:0 0 0.35rem; font-size:1.1rem;">Supportive Live Practice</h3>
+            <p class="text-muted" style="margin:0; font-size:0.85rem; line-height:1.5;">
+              Timed 5-minute interview drills evaluated across clarity, accuracy, confidence, and communication.
+            </p>
+          </div>
+        </div>
+        <div class="font-mono text-brand" style="border-top:1px solid var(--border-subtle); padding-top:0.75rem; font-size:0.75rem; text-transform:uppercase; display:flex; justify-content:space-between;">
+          <span>Start mock interview</span><span>→</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding: 1rem 0 4rem;">
+  <div class="container">
+    <div class="cp-manifesto">
+      <div class="font-mono" style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.2em; opacity:0.8;">
+        <span class="cp-coral-dot"></span> 03 / Our Standard
+      </div>
+      <h2 class="font-poster" style="font-size:clamp(2.2rem, 5vw, 3.8rem); text-transform:uppercase; margin:0.75rem 0; line-height:0.95;">
+        Skills Matter. <span style="opacity:0.8;">Pedigree Doesn't.</span>
+      </h2>
+      <p style="max-width:34rem; margin:0 auto 1.75rem; opacity:0.85; font-size:0.95rem; line-height:1.6;">
+        Zero CGPA barriers, zero tier bias — just transparent rubrics and actionable career growth for every student.
+      </p>
+      <div class="cp-grid-3">
+        <div class="cp-stat-box">
+          <div class="font-mono tabular-nums" style="font-size:1.85rem; font-weight:700;">0%</div>
+          <div class="font-mono" style="font-size:0.72rem; text-transform:uppercase; opacity:0.8;">CGPA Bias</div>
+        </div>
+        <div class="cp-stat-box">
+          <div class="font-mono tabular-nums" style="font-size:1.85rem; font-weight:700;">100%</div>
+          <div class="font-mono" style="font-size:0.72rem; text-transform:uppercase; opacity:0.8;">Free Access</div>
+        </div>
+        <div class="cp-stat-box">
+          <div class="font-mono tabular-nums" style="font-size:1.85rem; font-weight:700;">&lt;30s</div>
+          <div class="font-mono" style="font-size:0.72rem; text-transform:uppercase; opacity:0.8;">Audit Latency</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-bottom:4.5rem;">
+  <div class="container">
+    <div class="cp-card" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:2rem;">
+      <div style="max-width:34rem;">
+        <div class="cp-section-label">Advisory &amp; Coaching</div>
+        <h3 class="font-display" style="font-size:1.75rem; margin:0.4rem 0; font-weight:400;">Need personalized 1-on-1 guidance?</h3>
+        <p class="text-muted" style="font-size:0.875rem; margin:0; line-height:1.6;">
+          Book a private session for live mock interview drills, line-by-line bullet rewriting, and off-campus referral strategy.
+        </p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:0.65rem; min-width:16rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:0.55rem 0.85rem; border:1px solid var(--border-subtle); border-radius:0.5rem; background:var(--surface-base); font-family:var(--font-mono); font-size:0.75rem;">
+          <span>training@careerpilot.ai</span>
+          <button type="button" id="copy-training-email" style="border:none; background:none; cursor:pointer; color:var(--accent-brand-ink); font-weight:600;">Copy</button>
+        </div>
+        <a href="mailto:training@careerpilot.ai?subject=Personalized%20CareerPilot%20Training" class="cp-btn cp-btn-primary">
+          Book Mentoring Call ↗
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

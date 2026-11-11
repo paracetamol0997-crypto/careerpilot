@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}CareerPilot — Personal Career Guide for College Students{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap" rel="stylesheet" />
+  <script>
+    (function(){
+      try {
+        if (localStorage.getItem('careerpilot_theme') === 'dark') {
+          document.documentElement.classList.add('dark');
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+</head>
+<body class="paper-grain" data-page="{{ page }}">
+  <header class="cp-navbar">
+    <div class="cp-navbar-inner">
+      <div class="cp-nav-left">
+        <div role="group" aria-label="Theme Switcher" class="cp-theme-toggle">
+          <button type="button" class="cp-theme-btn" data-theme-set="light" aria-pressed="true">☀ Light</button>
+          <button type="button" class="cp-theme-btn" data-theme-set="dark" aria-pressed="false">🌙 Dark</button>
+        </div>
+
+        <a href="{{ url_for('pages.home') }}" class="cp-brand-mark">
+          <span class="cp-brand-badge">CP</span>
+          <span class="cp-brand-name">CareerPilot</span>
+        </a>
+      </div>
+
+      <nav class="cp-nav-links" aria-label="Primary Navigation">
+        <a href="{{ url_for('pages.chat_page') }}" class="cp-nav-link {% if page == 'chat' %}active{% endif %}">Co-Pilot</a>
+        <a href="{{ url_for('pages.dashboard_page') }}" class="cp-nav-link {% if page == 'dashboard' %}active{% endif %}">My Space</a>
+        <a href="{{ url_for('pages.admin_page') }}" class="cp-nav-link {% if page == 'admin' %}active{% endif %}">Admin</a>
+      </nav>
+
+      <div id="nav-auth-slot">
+        {% if state.isRegistered and state.user %}
+          <a href="{{ url_for('pages.dashboard_page') }}" class="cp-verified-pill">
+            ✓ {{ state.user.name }}
+          </a>
+        {% else %}
+          <button type="button" class="cp-save-pill" data-open-reg>
+            <span>Save Progress</span>
+            <span class="cp-save-dot">→</span>
+          </button>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <main style="flex: 1;">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% if page != 'chat' %}
+  <footer class="cp-footer">
+    <div class="container" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem;">
+      <div style="display:flex; align-items:center; gap:0.6rem;">
+        <strong class="font-mono" style="color:var(--text-primary);">CP/</strong>
+        <strong style="color:var(--text-primary);">CareerPilot Python + Flask</strong>
+        <span>· India DPDP Act Compliant</span>
+      </div>
+      <div class="font-mono" style="display:flex; gap:1.5rem; text-transform:uppercase; font-size:0.7rem;">
+        <a href="{{ url_for('pages.dashboard_page') }}">Privacy &amp; Consent</a>
+        <a href="{{ url_for('pages.admin_page') }}">Admin &amp; Telemetry</a>
+      </div>
+    </div>
+  </footer>
+  {% endif %}
+
+  <!-- Native <dialog> Modals (Modern Web Guidance) -->
+  <dialog id="resume-dialog" class="cp-dialog" closedby="any" aria-labelledby="resume-dialog-title">
+    <div class="cp-dialog-head">
+      <div>
+        <h3 id="resume-dialog-title" style="margin:0; font-size:1rem; font-weight:600;">Check Resume ATS Score</h3>
+        <div class="font-mono text-subtle" style="font-size:0.7rem;">Deterministic 100-pt rubric · 3 Fixable Mistakes</div>
+      </div>
+      <button type="button" class="cp-close-btn" data-close-dialog="resume-dialog" aria-label="Close modal">✕</button>
+    </div>
+    <div class="cp-dialog-body">
+      <div class="cp-tabs" style="margin-bottom:1rem;">
+        <button type="button" class="cp-tab-btn active" data-resume-tab="paste">Paste Resume Text</button>
+        <button type="button" class="cp-tab-btn" data-resume-tab="upload">Upload PDF / DOCX / TXT</button>
+      </div>
+      <div id="resume-modal-error" class="cp-badge cp-badge-fix hidden" style="width:100%; margin-bottom:0.75rem; padding:0.55rem 0.75rem;"></div>
+      <form id="resume-audit-form" style="display:flex; flex-direction:column; gap:0.9rem;">
+        <div id="resume-paste-pane" style="display:flex; flex-direction:column; gap:0.5rem;">
+          <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
+            <label for="resume-text-input" class="text-muted">Paste your resume text or bullets:</label>
+            <button type="button" id="insert-sample-resume-btn" style="border:none; background:none; color:var(--accent-brand-ink); font-weight:600; cursor:pointer;">Insert Sample Resume</button>
+          </div>
+          <textarea id="resume-text-input" class="cp-textarea font-mono" rows="9" placeholder="Paste your education, skills, projects, and experience here..." autofocus></textarea>
+        </div>
+
+        <div id="resume-upload-pane" class="hidden" style="display:flex; flex-direction:column; gap:0.75rem;">
+          <label style="border:2px dashed var(--border-strong); border-radius:0.75rem; padding:1.75rem; text-align:center; cursor:pointer; background:var(--surface-base);">
+            <div style="font-weight:600; font-size:0.85rem;" id="resume-file-label">Click to choose a PDF, DOCX, or TXT file</div>
+            <div class="font-mono text-subtle" style="font-size:0.7rem; margin-top:0.3rem;">Magic-byte verified · Malware scanned · Max 5 MB</div>
+            <input type="file" id="resume-file-input" accept=".pdf,.docx,.txt" class="hidden" />
+          </label>
+        </div>
+
+        <button type="submit" id="resume-submit-btn" class="cp-btn cp-btn-cta" style="width:100%;">Analyze ATS Score →</button>
+      </form>
+    </div>
+  </dialog>
+
+  <dialog id="interview-dialog" class="cp-dialog" closedby="any" aria-labelledby="interview-dialog-title">
+    <div class="cp-dialog-head">
+      <div>
+        <h3 id="interview-dialog-title" style="margin:0; font-size:1rem; font-weight:600;">5-Min Mock Interview Practice</h3>
+        <div class="font-mono text-subtle" style="font-size:0.7rem;">Supportive &amp; constructive · College fresher rubric</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:0.6rem;">
+        <span id="interview-timer" class="cp-badge font-mono tabular-nums">⏱ 05:00</span>
+        <button type="button" class="cp-close-btn" data-close-dialog="interview-dialog" aria-label="Close modal">✕</button>
+      </div>
+    </div>
+    <div class="cp-dialog-body" id="interview-dialog-body"></div>
+  </dialog>
+
+  <dialog id="reg-dialog" class="cp-dialog" closedby="any" aria-labelledby="reg-dialog-title">
+    <div class="cp-dialog-head">
+      <div>
+        <h3 id="reg-dialog-title" style="margin:0; font-size:1rem; font-weight:600;">Save Progress &amp; Unlock Features</h3>
+        <div class="font-mono text-subtle" style="font-size:0.7rem;">Zero spam · Takes 15 seconds · 100% Free</div>
+      </div>
+      <button type="button" class="cp-close-btn" data-close-dialog="reg-dialog" aria-label="Close modal">✕</button>
+    </div>
+    <div class="cp-dialog-body" style="display:flex; flex-direction:column; gap:1rem;">
+      <div class="cp-card" style="padding:0.85rem; background:var(--surface-base); font-size:0.78rem; display:flex; flex-direction:column; gap:0.35rem;">
+        <div>✓ Full 90-Day (12-Week) Personalised Roadmap</div>
+        <div>✓ Unlock ATS Mistakes #2 &amp; #3 with Before/After rewrites</div>
+        <div>✓ 5-Minute Mock Interview with 4-pillar scoring report</div>
+      </div>
+
+      <div class="cp-tabs">
+        <button type="button" class="cp-tab-btn active" data-auth-tab="phone">Phone OTP</button>
+        <button type="button" class="cp-tab-btn" data-auth-tab="google">Google</button>
+        <button type="button" class="cp-tab-btn" data-auth-tab="magic_link">Magic Link</button>
+      </div>
+
+      <div id="reg-error" class="cp-badge cp-badge-fix hidden" style="width:100%; padding:0.5rem;"></div>
+
+      <div id="auth-pane-phone" style="display:flex; flex-direction:column; gap:0.75rem;">
+        <form id="phone-otp-send-form" style="display:flex; flex-direction:column; gap:0.65rem;">
+          <label for="reg-phone-input" style="font-size:0.75rem; font-weight:500;">Mobile Number (India +91)</label>
+          <input id="reg-phone-input" type="tel" class="cp-input" placeholder="+91 98765 43210" required autofocus />
+          <button type="submit" class="cp-btn cp-btn-primary">Send Verification OTP →</button>
+        </form>
+        <form id="phone-otp-verify-form" class="hidden" style="display:flex; flex-direction:column; gap:0.65rem;">
+          <div class="cp-badge">Demo OTP generated: <strong class="font-mono">7890</strong></div>
+          <label for="reg-otp-input" style="font-size:0.75rem; font-weight:500;">Enter 4-digit OTP</label>
+          <input id="reg-otp-input" type="text" maxlength="6" class="cp-input font-mono" style="text-align:center; letter-spacing:0.25em; font-size:1.1rem;" placeholder="7890" required />
+          <button type="submit" class="cp-btn cp-btn-primary">Confirm &amp; Unlock Features</button>
+        </form>
+      </div>
+
+      <div id="auth-pane-google" class="hidden" style="display:flex; flex-direction:column; gap:0.75rem; text-align:center;">
+        <p class="text-muted" style="font-size:0.8rem; margin:0;">Sign in with your Google account. Your guest profile and history migrate automatically.</p>
+        <button type="button" id="google-oauth-btn" class="cp-btn cp-btn-outline">Continue with Google</button>
+      </div>
+
+      <div id="auth-pane-magic" class="hidden" style="display:flex; flex-direction:column; gap:0.75rem;">
+        <form id="magic-link-send-form" style="display:flex; flex-direction:column; gap:0.65rem;">
+          <label for="reg-email-input" style="font-size:0.75rem; font-weight:500;">College / Personal Email</label>
+          <input id="reg-email-input" type="email" class="cp-input" placeholder="student@college.edu" required />
+          <button type="submit" class="cp-btn cp-btn-primary">Send Magic Link →</button>
+        </form>
+        <div id="magic-link-verify-box" class="hidden" style="display:flex; flex-direction:column; gap:0.65rem;">
+          <div class="cp-badge cp-badge-pass" id="magic-link-msg">Magic Link Sent</div>
+          <button type="button" id="magic-link-verify-btn" class="cp-btn cp-btn-primary">Simulate 1-Tap Magic Link Click</button>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid var(--border-subtle); padding-top:0.75rem;">
+        <button type="button" id="instant-demo-verify-btn" class="cp-btn cp-btn-outline cp-btn-sm" style="width:100%;">
+          1-Click Instant Demo Verification
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  {% if page == 'home' %}
+  <div class="cp-floating-wrap" id="floating-widget">
+    <button type="button" class="cp-floating-launcher" id="floating-open-btn">
+      <span style="width:1.75rem; height:1.75rem; border-radius:999px; background:var(--accent-cta); display:inline-flex; align-items:center; justify-content:center;">💬</span>
+      <span style="text-align:left;">
+        <span style="display:block; font-size:0.75rem; font-weight:600;">Career Guide</span>
+        <span class="font-mono" style="display:block; font-size:0.625rem; opacity:0.8;">30s Resume &amp; Role Check</span>
+      </span>
+    </button>
+
+    <div class="cp-floating-panel hidden" id="floating-panel">
+      <div style="padding:0.75rem 1rem; border-bottom:1px solid var(--border-subtle); background:var(--surface-base); display:flex; align-items:center; justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+          <span class="cp-brand-badge">CP/</span>
+          <div>
+            <div style="font-size:0.78rem; font-weight:600;">CareerPilot Studio</div>
+            <div class="font-mono text-subtle" style="font-size:0.65rem;">Personal Career Guide</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:0.35rem;">
+          <a href="{{ url_for('pages.chat_page') }}" class="cp-close-btn" title="Expand to Full Page" style="font-size:0.85rem;">↗</a>
+          <button type="button" class="cp-close-btn" id="floating-close-btn" aria-label="Close Chat">✕</button>
+        </div>
+      </div>
+      <div class="cp-chat-shell embedded" id="embedded-chat-root" style="flex:1; overflow:hidden;"></div>
+    </div>
+  </div>
+  {% endif %}
+
+  <script>
+    window.__CAREERPILOT_INITIAL_STATE__ = {{ state | tojson }};
+  </script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
