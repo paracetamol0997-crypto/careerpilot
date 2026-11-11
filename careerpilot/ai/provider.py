@@ -86,7 +86,7 @@ class GeminiProvider:
     def __init__(
         self,
         api_key: Optional[str] = None,
-        model_name: str = "gemini-2.5-flash",
+        model_name: str = "gemini-3.8-flash",
         fallback_to_mock: bool = True,
     ) -> None:
         self.api_key = (api_key or os.getenv("GEMINI_API_KEY", "")).strip()
@@ -104,8 +104,10 @@ class GeminiProvider:
 
     def _candidate_models(self) -> list[str]:
         if "pro" in self.model_name:
-            return ["gemini-2.5-pro", "gemini-2.5-flash"]
-        return [self.model_name, "gemini-2.5-flash", "gemini-2.0-flash"]
+            candidates = [self.model_name, "gemini-3.8-flash", "gemini-2.5-flash"]
+        else:
+            candidates = [self.model_name, "gemini-3.8-flash", "gemini-2.5-flash", "gemini-2.0-flash"]
+        return list(dict.fromkeys(candidates))
 
     def generate_text(self, prompt: str, system_prompt: Optional[str] = None) -> LLMResponse:
         if not self._client:
@@ -184,6 +186,8 @@ def get_active_llm_provider(task: str = "chat"):
     """Return GeminiProvider when GEMINI_API_KEY is configured, else MockLLMProvider."""
     api_key = os.getenv("GEMINI_API_KEY", "").strip()
     if api_key:
-        model_name = "gemini-2.5-pro" if task == "heavy" else "gemini-2.5-flash"
-        return GeminiProvider(api_key=api_key, model_name=model_name)
+        default_model = os.getenv("GEMINI_MODEL", "").strip() or (
+            "gemini-2.5-pro" if task == "heavy" else "gemini-3.8-flash"
+        )
+        return GeminiProvider(api_key=api_key, model_name=default_model)
     return MockLLMProvider()
