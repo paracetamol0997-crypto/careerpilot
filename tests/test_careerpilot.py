@@ -236,3 +236,18 @@ def test_dpdp_controls_admin_flags_and_hybrid_retrieval(client):
     retrieval = perform_hybrid_retrieval("python flask fastapi", target_role="python-developer", top_k=4)
     assert len(retrieval["chunks"]) == 4
     assert all(cid.startswith("res-") for cid in retrieval["citedIds"])
+
+
+def test_static_assets_and_vercel_tmp_fallback(client, monkeypatch):
+    css_resp = client.get("/static/css/styles.css")
+    assert css_resp.status_code == 200
+    js_resp = client.get("/static/js/app.js")
+    assert js_resp.status_code == 200
+
+    from careerpilot.config import resolve_instance_dir
+    import tempfile
+
+    monkeypatch.setenv("VERCEL", "1")
+    monkeypatch.delenv("CAREERPILOT_INSTANCE_DIR", raising=False)
+    resolved = resolve_instance_dir()
+    assert str(resolved).startswith(tempfile.gettempdir())

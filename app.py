@@ -23,7 +23,8 @@ def create_app(test_config: Optional[Dict[str, Any]] = None) -> Flask:
     app = Flask(
         __name__,
         template_folder=str(base_dir / "templates"),
-        static_folder=str(base_dir / "static"),
+        static_folder=str(base_dir / "public" / "static"),
+        static_url_path="/static",
     )
 
     app.config.from_object(Config)

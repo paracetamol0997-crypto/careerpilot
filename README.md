@@ -41,3 +41,13 @@ Open **http://127.0.0.1:5000** in your browser.
 ```bash
 pytest -v
 ```
+
+## Deploy to Vercel
+
+This project includes [vercel.json](vercel.json) and serves static assets from `public/static/` so Vercel can deploy it as a zero-config Flask app:
+
+1. Go to [vercel.com/new](https://vercel.com/new) and import your GitHub repository.
+2. *(Optional)* Add `GEMINI_API_KEY` and `FLASK_SECRET_KEY` under **Environment Variables**.
+3. Click **Deploy**.
+
+> **Note:** When running on Vercel (`VERCEL=1`), the deployment filesystem is read-only, so SQLite and uploaded files automatically use `/tmp/careerpilot_instance`. Because `/tmp` on serverless functions is ephemeral across cold starts, use a hosted database (e.g. Postgres) if you later need persistent multi-instance cloud storage.
